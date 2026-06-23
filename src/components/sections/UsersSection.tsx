@@ -28,13 +28,31 @@ export function UsersSection() {
   const handleEdit = () => {};
   const handleDelete = () => {};
 
+  const getRoleText = (role: string) => {
+    const roles: Record<string, string> = {
+      admin: "Quản trị viên",
+      editor: "Biên tập viên",
+      viewer: "Người xem",
+    };
+    return roles[role] || role;
+  };
+
+  const getStatusText = (status: string) => {
+    const statuses: Record<string, string> = {
+      active: "Hoạt động",
+      invited: "Đã mời",
+      suspended: "Tạm ngưng",
+    };
+    return statuses[status] || status;
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold">User Management</h2>
+        <h2 className="text-xl font-bold">Quản lý người dùng</h2>
         <Button onClick={handleAdd}>
           <UserPlus className="mr-2 h-4 w-4" />
-          Invite User
+          Mời người dùng
         </Button>
       </div>
       <div className="grid gap-4">
@@ -42,7 +60,7 @@ export function UsersSection() {
           <Card key={user.id}>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>{user.name} ({user.role})</span>
+                <span>{user.name} ({getRoleText(user.role)})</span>
                 <span
                   className={
                     user.status === "active"
@@ -52,17 +70,18 @@ export function UsersSection() {
                       : "text-red-600"
                   }
                 >
-                  {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
+                  {getStatusText(user.status)}
                 </span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">                <span>{user.email}</span>
+              <div className="flex items-center justify-between">
+                <span>{user.email}</span>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="icon" onClick={handleEdit}>
+                  <Button variant="outline" size="icon" onClick={handleEdit} title="Sửa">
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="destructive" size="icon" onClick={handleDelete}>
+                  <Button variant="destructive" size="icon" onClick={handleDelete} title="Xóa">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

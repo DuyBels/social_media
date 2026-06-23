@@ -5,15 +5,15 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 const navItems = [
-  { key: "dashboard", label: "Dashboard", icon: Home },
-  { key: "overview", label: "Overview", icon: Eye },
-  { key: "posts", label: "Posts", icon: Calendar },
-  { key: "analytics", label: "Analytics", icon: BarChart2 },
-  { key: "engagement", label: "Engagement", icon: MessageCircle },
-  { key: "campaigns", label: "Campaigns", icon: Target },
-  { key: "customers", label: "Customers", icon: UserCheck },
-  { key: "users", label: "Users", icon: Users },
-  { key: "settings", label: "Settings", icon: Settings },
+  { key: "dashboard", label: "Bảng điều khiển", icon: Home },
+  { key: "overview", label: "Tổng quan", icon: Eye },
+  { key: "posts", label: "Bài viết", icon: Calendar },
+  { key: "analytics", label: "Phân tích", icon: BarChart2 },
+  { key: "engagement", label: "Tương tác", icon: MessageCircle },
+  { key: "campaigns", label: "Chiến dịch", icon: Target },
+  { key: "customers", label: "Khách hàng", icon: UserCheck },
+  { key: "users", label: "Người dùng", icon: Users },
+  { key: "settings", label: "Cài đặt", icon: Settings },
 ];
 
 export function Sidebar({
@@ -72,7 +72,7 @@ export function Sidebar({
         </nav>
         
         <div className="p-4 text-xs text-muted-foreground text-center border-t">
-          &copy; {new Date().getFullYear()} Social Media Dashboard
+          &copy; {new Date().getFullYear()} Bảng điều khiển Mạng xã hội
         </div>
       </aside>
     </>

@@ -9,6 +9,18 @@ import { ThemeToggler } from "../components/ThemeToggler";
 import { Sidebar } from "../components/Sidebar";
 import { DashboardHome } from "../components/DashboardHome";
 
+const sectionTitles: Record<string, string> = {
+  dashboard: "Bảng điều khiển",
+  overview: "Tổng quan",
+  posts: "Bài viết",
+  analytics: "Phân tích",
+  engagement: "Tương tác",
+  campaigns: "Chiến dịch",
+  customers: "Khách hàng",
+  users: "Người dùng",
+  settings: "Cài đặt",
+};
+
 export default function Home() {
   const [selectedSection, setSelectedSection] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -33,15 +45,15 @@ export default function Home() {
               <Menu className="h-5 w-5" />
             </Button>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold truncate">Social Media Dashboard</h1>
+              <h1 className="text-lg sm:text-xl font-bold truncate">Bảng điều khiển Mạng xã hội</h1>
               <p className="text-xs text-muted-foreground capitalize">
-                {selectedSection === "dashboard" ? "Dashboard" : selectedSection === "overview" ? "Overview" : selectedSection}
+                {sectionTitles[selectedSection] || selectedSection}
               </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-              <span>Last updated: just now</span>
+              <span>Cập nhật lần cuối: vừa xong</span>
             </div>
             <ThemeToggler />
           </div>

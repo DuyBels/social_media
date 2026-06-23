@@ -39,7 +39,7 @@ const demoCustomers: Customer[] = [
     name: "Sarah Johnson",
     email: "sarah.johnson@email.com",
     phone: "+1 (555) 123-4567",
-    location: "New York, USA",
+    location: "New York, Mỹ",
     avatar: "SJ",
     joinDate: "2024-03-15",
     lastActive: "2025-06-11T08:30:00Z",
@@ -49,15 +49,15 @@ const demoCustomers: Customer[] = [
     segment: "VIP",
     satisfaction: 5,
     interactions: { likes: 45, comments: 12, shares: 8, messages: 3 },
-    campaigns: ["Summer Product Launch", "Brand Awareness Q2"],
-    notes: "Highly engaged customer, frequent purchaser of premium products",
+    campaigns: ["Ra mắt sản phẩm mùa hè", "Nhận diện thương hiệu Q2"],
+    notes: "Khách hàng tương tác rất cao, thường xuyên mua các sản phẩm cao cấp",
   },
   {
     id: "2",
     name: "Michael Chen",
     email: "m.chen@techcorp.com",
     phone: "+1 (555) 987-6543",
-    location: "San Francisco, USA",
+    location: "San Francisco, Mỹ",
     avatar: "MC",
     joinDate: "2024-01-22",
     lastActive: "2025-06-10T16:45:00Z",
@@ -67,15 +67,15 @@ const demoCustomers: Customer[] = [
     segment: "VIP",
     satisfaction: 4,
     interactions: { likes: 23, comments: 18, shares: 15, messages: 7 },
-    campaigns: ["B2B Lead Generation", "Holiday Promotion"],
-    notes: "B2B customer, interested in bulk orders and enterprise solutions",
+    campaigns: ["Thu hút khách hàng B2B", "Khuyến mãi ngày lễ"],
+    notes: "Khách hàng doanh nghiệp, quan tâm đến đơn hàng số lượng lớn và giải pháp doanh nghiệp",
   },
   {
     id: "3",
     name: "Emma Rodriguez",
     email: "emma.r@gmail.com",
     phone: "+1 (555) 456-7890",
-    location: "Miami, USA",
+    location: "Miami, Mỹ",
     avatar: "ER",
     joinDate: "2025-05-01",
     lastActive: "2025-06-11T12:15:00Z",
@@ -85,15 +85,15 @@ const demoCustomers: Customer[] = [
     segment: "New",
     satisfaction: 4,
     interactions: { likes: 67, comments: 34, shares: 23, messages: 2 },
-    campaigns: ["Gen Z Engagement"],
-    notes: "Young customer, very active on social media, price-conscious",
+    campaigns: ["Tương tác với thế hệ Z"],
+    notes: "Khách hàng trẻ tuổi, hoạt động rất tích cực trên mạng xã hội, nhạy cảm về giá",
   },
   {
     id: "4",
     name: "David Thompson",
     email: "david.t@email.com",
     phone: "+1 (555) 234-5678",
-    location: "Chicago, USA",
+    location: "Chicago, Mỹ",
     avatar: "DT",
     joinDate: "2023-11-10",
     lastActive: "2025-05-20T10:20:00Z",
@@ -103,15 +103,15 @@ const demoCustomers: Customer[] = [
     segment: "At Risk",
     satisfaction: 3,
     interactions: { likes: 12, comments: 3, shares: 1, messages: 0 },
-    campaigns: ["Holiday Promotion"],
-    notes: "Previously active customer, engagement has decreased recently",
+    campaigns: ["Khuyến mãi ngày lễ"],
+    notes: "Khách hàng từng hoạt động tích cực, mức độ tương tác giảm gần đây",
   },
   {
     id: "5",
     name: "Lisa Wang",
     email: "lisa.wang@startup.io",
     phone: "+1 (555) 345-6789",
-    location: "Seattle, USA",
+    location: "Seattle, Mỹ",
     avatar: "LW",
     joinDate: "2024-08-03",
     lastActive: "2025-06-11T09:00:00Z",
@@ -121,15 +121,15 @@ const demoCustomers: Customer[] = [
     segment: "Regular",
     satisfaction: 4,
     interactions: { likes: 28, comments: 9, shares: 12, messages: 4 },
-    campaigns: ["Brand Awareness Q2", "Summer Product Launch"],
-    notes: "Tech industry professional, values innovation and quality",
+    campaigns: ["Nhận diện thương hiệu Q2", "Ra mắt sản phẩm mùa hè"],
+    notes: "Chuyên gia ngành công nghệ, đề cao tính đổi mới và chất lượng",
   },
   {
     id: "6",
     name: "James Mitchell",
     email: "james.m@email.com",
     phone: "+1 (555) 567-8901",
-    location: "Austin, USA",
+    location: "Austin, Mỹ",
     avatar: "JM",
     joinDate: "2024-12-15",
     lastActive: "2025-06-11T14:30:00Z",
@@ -139,16 +139,16 @@ const demoCustomers: Customer[] = [
     segment: "Regular",
     satisfaction: 5,
     interactions: { likes: 15, comments: 5, shares: 3, messages: 1 },
-    campaigns: ["Summer Product Launch"],
-    notes: "Direct website customer, prefers email communications",
+    campaigns: ["Ra mắt sản phẩm mùa hè"],
+    notes: "Khách hàng trực tiếp từ trang web, ưu tiên giao tiếp qua email",
   },
 ];
 
 const segmentData = {
-  labels: ["VIP", "Regular", "New", "At Risk"],
+  labels: ["VIP", "Thường xuyên", "Mới", "Rủi ro rời bỏ"],
   datasets: [
     {
-      label: "Customer Segments",
+      label: "Phân khúc khách hàng",
       data: [
         demoCustomers.filter(c => c.segment === "VIP").length,
         demoCustomers.filter(c => c.segment === "Regular").length,
@@ -164,7 +164,7 @@ const platformData = {
   labels: ["Instagram", "LinkedIn", "TikTok", "Facebook", "Twitter", "Website"],
   datasets: [
     {
-      label: "Customers by Platform",
+      label: "Khách hàng theo nền tảng",
       data: [
         demoCustomers.filter(c => c.platform === "Instagram").length,
         demoCustomers.filter(c => c.platform === "LinkedIn").length,
@@ -197,6 +197,16 @@ export function CustomersSection() {
     // TODO: Contact customer functionality
   };
 
+  const getSegmentText = (segment: string) => {
+    const texts: Record<string, string> = {
+      VIP: "VIP",
+      Regular: "Thường xuyên",
+      New: "Mới",
+      "At Risk": "Rủi ro rời bỏ",
+    };
+    return texts[segment] || segment;
+  };
+
   const totalCustomers = customers.length;
   const totalRevenue = customers.reduce((sum, c) => sum + c.totalSpent, 0);
   const avgSatisfaction = customers.reduce((sum, c) => sum + c.satisfaction, 0) / customers.length;
@@ -205,10 +215,10 @@ export function CustomersSection() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">Customer Management</h2>
+        <h2 className="text-2xl font-bold">Quản lý khách hàng</h2>
         <Button onClick={handleAdd} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
-          Add Customer
+          Thêm khách hàng
         </Button>
       </div>
 
@@ -216,42 +226,42 @@ export function CustomersSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng số khách hàng</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalCustomers}</div>
-            <p className="text-xs text-muted-foreground">Active customer base</p>
+            <p className="text-xs text-muted-foreground">Nhóm khách hàng đang hoạt động</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng doanh thu</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Lifetime customer value</p>
+            <p className="text-xs text-muted-foreground">Giá trị trọn đời của khách hàng</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Satisfaction</CardTitle>
+            <CardTitle className="text-sm font-medium">Mức độ hài lòng trung bình</CardTitle>
             <Star className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{avgSatisfaction.toFixed(1)}/5</div>
-            <p className="text-xs text-muted-foreground">Customer satisfaction score</p>
+            <p className="text-xs text-muted-foreground">Điểm hài lòng của khách hàng</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">VIP Customers</CardTitle>
+            <CardTitle className="text-sm font-medium">Khách hàng VIP</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{vipCustomers}</div>
-            <p className="text-xs text-muted-foreground">{((vipCustomers/totalCustomers)*100).toFixed(1)}% of total</p>
+            <p className="text-xs text-muted-foreground">{((vipCustomers/totalCustomers)*100).toFixed(1)}% tổng số</p>
           </CardContent>
         </Card>
       </div>
@@ -260,7 +270,7 @@ export function CustomersSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Customer Segments</CardTitle>
+            <CardTitle className="text-lg">Phân khúc khách hàng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-52">
@@ -279,7 +289,7 @@ export function CustomersSection() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Customers by Platform</CardTitle>
+            <CardTitle className="text-lg">Khách hàng theo nền tảng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-52">
@@ -300,7 +310,7 @@ export function CustomersSection() {
       {/* Customer List */}
       <Card>
         <CardHeader>
-          <CardTitle>Customer Database</CardTitle>
+          <CardTitle>Cơ sở dữ liệu khách hàng</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -332,7 +342,7 @@ export function CustomersSection() {
                             : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
                         }`}
                       >
-                        {customer.segment}
+                        {getSegmentText(customer.segment)}
                       </span>
                       <div className="flex items-center gap-1">
                         <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
@@ -346,16 +356,16 @@ export function CustomersSection() {
                       <MapPin className="h-3 w-3" />
                       {customer.location}
                     </div>
-                    <div>Total Spent: ${customer.totalSpent.toLocaleString()}</div>
-                    <div>Orders: {customer.orders}</div>
-                    <div>Last Active: {new Date(customer.lastActive).toLocaleDateString()}</div>
+                    <div>Tổng chi tiêu: ${customer.totalSpent.toLocaleString()}</div>
+                    <div>Đơn hàng: {customer.orders}</div>
+                    <div>Hoạt động cuối: {new Date(customer.lastActive).toLocaleDateString()}</div>
                   </div>
                   
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
-                    <div>❤️ {customer.interactions.likes} likes</div>
-                    <div>💬 {customer.interactions.comments} comments</div>
-                    <div>🔄 {customer.interactions.shares} shares</div>
-                    <div>📧 {customer.interactions.messages} messages</div>
+                    <div>❤️ {customer.interactions.likes} thích</div>
+                    <div>💬 {customer.interactions.comments} bình luận</div>
+                    <div>🔄 {customer.interactions.shares} chia sẻ</div>
+                    <div>📧 {customer.interactions.messages} tin nhắn</div>
                   </div>
                   
                   {customer.notes && (
@@ -367,7 +377,7 @@ export function CustomersSection() {
                     variant="outline" 
                     size="icon" 
                     onClick={handleContact}
-                    title="Send Email"
+                    title="Gửi Email"
                   >
                     <Mail className="h-4 w-4" />
                   </Button>
@@ -375,7 +385,7 @@ export function CustomersSection() {
                     variant="outline" 
                     size="icon" 
                     onClick={handleContact}
-                    title="Call"
+                    title="Gọi điện"
                   >
                     <Phone className="h-4 w-4" />
                   </Button>
@@ -383,7 +393,7 @@ export function CustomersSection() {
                     variant="outline" 
                     size="icon" 
                     onClick={handleContact}
-                    title="Send Message"
+                    title="Gửi tin nhắn"
                   >
                     <MessageSquare className="h-4 w-4" />
                   </Button>
@@ -391,7 +401,7 @@ export function CustomersSection() {
                     variant="outline" 
                     size="icon" 
                     onClick={handleEdit}
-                    title="Edit"
+                    title="Sửa"
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
@@ -399,7 +409,7 @@ export function CustomersSection() {
                     variant="destructive" 
                     size="icon" 
                     onClick={handleDelete}
-                    title="Delete"
+                    title="Xóa"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>

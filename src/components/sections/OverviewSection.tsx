@@ -23,8 +23,8 @@ export function OverviewSection() {
     reach: 0,
     engagement: 0
   });  const [notifications, setNotifications] = useState([
-    { id: 1, message: "New follower milestone reached!", type: "success", time: "2 min ago" },
-    { id: 2, message: "Post scheduled for 2:00 PM", type: "info", time: "5 min ago" }
+    { id: 1, message: "Đạt cột mốc người theo dõi mới!", type: "success", time: "2 phút trước" },
+    { id: 2, message: "Đã lên lịch bài viết lúc 14:00", type: "info", time: "5 phút trước" }
   ]);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(true);
@@ -113,29 +113,29 @@ export function OverviewSection() {
       default: return "bg-gray-100 dark:bg-gray-800";
     }  }, []);
   const locationData = useMemo(() => [
-    { country: 'United States', count: 197520, percentage: 100 },
+    { country: 'Hoa Kỳ', count: 197520, percentage: 100 },
     { country: 'Brazil', count: 32985, percentage: 65 },
-    { country: 'Switzerland', count: 10254, percentage: 35 }
+    { country: 'Thụy Sĩ', count: 10254, percentage: 35 }
   ], []);
   const ageData = useMemo(() => [
     { range: '18-24', count: 89234, percentage: 85 },
     { range: '25-34', count: 156789, percentage: 100 },
     { range: '35-44', count: 32511, percentage: 45 }
-  ], []);// Refresh handler - optimized with useCallback
+  ], []);  // Refresh handler - optimized with useCallback
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    addToast({ description: "Refreshing dashboard data...", type: "info" });
+    addToast({ description: "Đang làm mới dữ liệu...", type: "info" });
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     setIsRefreshing(false);
-    addToast({ description: "Dashboard data refreshed successfully!", type: "success" });
+    addToast({ description: "Làm mới dữ liệu thành công!", type: "success" });
   }, [addToast]);
   // Dismiss notification handler
   const dismissNotification = (id: number) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
-    addToast({ description: "Notification dismissed", type: "info" });
+    addToast({ description: "Đã ẩn thông báo", type: "info" });
   };
 
   // Export data functionality
@@ -159,7 +159,7 @@ export function OverviewSection() {
       URL.revokeObjectURL(url);
     } else {
       // CSV format
-      const csv = `Metric,Value\nFollowers,${data.followers}\nReach,${data.reach}\nEngagement,${data.engagement}%\n\nTop Locations:\n${locationData.map(l => `${l.country},${l.count}`).join('\n')}\n\nAge Groups:\n${ageData.map(a => `${a.range},${a.count}`).join('\n')}`;
+      const csv = `Chỉ số,Giá trị\nNgười theo dõi,${data.followers}\nLượt tiếp cận,${data.reach}\nTương tác,${data.engagement}%\n\nVị trí hàng đầu:\n${locationData.map(l => `${l.country},${l.count}`).join('\n')}\n\nĐộ tuổi:\n${ageData.map(a => `${a.range},${a.count}`).join('\n')}`;
       const blob = new Blob([csv], { type: 'text/csv' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -169,7 +169,7 @@ export function OverviewSection() {
       URL.revokeObjectURL(url);
     }
     
-    addToast({ description: `Data exported as ${format.toUpperCase()}`, type: "success" });
+    addToast({ description: `Dữ liệu đã được xuất dưới định dạng ${format.toUpperCase()}`, type: "success" });
   };
 
   return (
@@ -198,44 +198,44 @@ export function OverviewSection() {
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
               <span className="text-xs text-gray-600 dark:text-gray-400">
-                {isOnline ? 'Online' : 'Offline'}
+                {isOnline ? 'Trực tuyến' : 'Ngoại tuyến'}
               </span>
             </div>
             <div className="text-xs text-gray-500 dark:text-gray-400">
-              Last updated: {currentTime.toLocaleTimeString()}
+              Cập nhật lần cuối: {currentTime.toLocaleTimeString()}
             </div>
           </div>          <div className="flex items-center gap-2">
             <div className="text-xs font-mono text-gray-500 dark:text-gray-400">
               {currentTime.toLocaleDateString()} {currentTime.toLocaleTimeString()}
             </div>            <div className="flex gap-1 ml-4">
-              <Tooltip content="Export data as JSON format">
+              <Tooltip content="Xuất dữ liệu định dạng JSON">
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 px-2 text-xs"
                   onClick={() => exportData('json')}
-                  title="Export as JSON"
+                  title="Xuất dưới định dạng JSON"
                 >
                   JSON
                 </Button>
               </Tooltip>
-              <Tooltip content="Export data as CSV format">
+              <Tooltip content="Xuất dữ liệu định dạng CSV">
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 px-2 text-xs"
                   onClick={() => exportData('csv')}
-                  title="Export as CSV"
+                  title="Xuất dưới định dạng CSV"
                 >                  CSV
                 </Button>
               </Tooltip>
-              <Tooltip content="Help & Shortcuts (Ctrl+H)">
+              <Tooltip content="Trợ giúp & Phím tắt (Ctrl+H)">
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 px-2 text-xs"
                   onClick={() => setShowHelpModal(true)}
-                  title="Help"
+                  title="Trợ giúp"
                 >
                   ?
                 </Button>
@@ -270,7 +270,7 @@ export function OverviewSection() {
                   onClick={() => {
                     addToast({
                       type: 'info',
-                      description: 'Profile shared successfully!'
+                      description: 'Đã chia sẻ hồ sơ thành công!'
                     });
                   }}
                 >
@@ -289,8 +289,8 @@ export function OverviewSection() {
                 </h2>
                 <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 mb-1" />
               </div>
-              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Followers</p>
-              <p className="text-xs text-green-600 dark:text-green-400">+2.1% from last month</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Người theo dõi</p>
+              <p className="text-xs text-green-600 dark:text-green-400">+2.1% so với tháng trước</p>
             </div>
 
             <div className="mb-6">
@@ -303,7 +303,7 @@ export function OverviewSection() {
                       : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
-                  Top Locations
+                  Vị trí hàng đầu
                 </button>
                 <button 
                   onClick={() => setActiveTab('age')}
@@ -313,7 +313,7 @@ export function OverviewSection() {
                       : 'text-gray-500 dark:text-gray-400 border-transparent hover:text-gray-700 dark:hover:text-gray-300'
                   }`}
                 >
-                  Age Range
+                  Độ tuổi
                 </button>
               </div>              <div className="space-y-3">
                 {(activeTab === 'locations' ? locationData : ageData).map((item, index) => (
@@ -336,7 +336,7 @@ export function OverviewSection() {
             </div>
 
             <div>              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">Profile Views Period</h3>                <Tooltip content="Refresh data (Ctrl+R)" position="left">
+                <h3 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">Lượt xem hồ sơ theo giai đoạn</h3>                <Tooltip content="Làm mới dữ liệu (Ctrl+R)" position="left">
                   <Button 
                     size="sm" 
                     variant="ghost" 
@@ -366,7 +366,7 @@ export function OverviewSection() {
                   <circle cx="75" cy="12" r="3" fill="#3B82F6" className="animate-ping" />
                 </svg>
                 <div className="absolute top-1 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-                  128.3K views
+                  128.3K lượt xem
                 </div>
               </div>
             </div>
@@ -375,7 +375,7 @@ export function OverviewSection() {
           {/* 2. Your Accounts Card */}
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Your Accounts</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Tài khoản của bạn</h3>
               <Button 
                 size="sm" 
                 variant="outline" 
@@ -383,7 +383,7 @@ export function OverviewSection() {
                 onClick={() => setShowAddAccountModal(true)}
               >
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                Add Account
+                Thêm tài khoản
               </Button>
             </div>
             
@@ -395,10 +395,10 @@ export function OverviewSection() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@samanthawilliam_</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{animatedStats.followers.toLocaleString()} followers</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{animatedStats.followers.toLocaleString()} người theo dõi</p>
                   </div>
                 </div>
-                <Badge className="bg-pink-500 text-white hover:bg-pink-600 text-xs">Primary</Badge>
+                <Badge className="bg-pink-500 text-white hover:bg-pink-600 text-xs">Chính</Badge>
               </div>
               
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
@@ -408,10 +408,10 @@ export function OverviewSection() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@smanthawilliam_</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">4,982 followers</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">4.982 người theo dõi</p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="text-xs">Manage</Button>
+                <Button size="sm" variant="outline" className="text-xs">Quản lý</Button>
               </div>
             </div>
           </Card>
@@ -422,26 +422,26 @@ export function OverviewSection() {
           {/* 3. Post Activity Card */}
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Post Activity</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Hoạt động đăng bài</h3>
               <Button size="sm" variant="outline" className="text-blue-600 border-blue-200 text-xs sm:text-sm w-full sm:w-auto">
-                Change Period
+                Thay đổi giai đoạn
               </Button>
             </div>
             
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">From 15 Feb - 15 May, 2024</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">Từ 15 tháng 2 - 15 tháng 5, 2024</p>
             
             <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
               <div className="text-center p-2 sm:p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">687</p>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Stories</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Tin (Stories)</p>
               </div>
               <div className="text-center p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">189</p>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Posts</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Bài viết</p>
               </div>
               <div className="text-center p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">24</p>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Reels</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Thước phim (Reels)</p>
               </div>
             </div>
 
@@ -450,10 +450,10 @@ export function OverviewSection() {
                 <div
                   key={i}
                   className={`w-4 h-4 sm:w-6 sm:h-6 rounded cursor-pointer transition-all duration-200 ${getActivityColor(level)}`}
-                  title={`${level} posts on day ${i + 1}`}                  onClick={() => {
+                  title={`${level} bài viết vào ngày ${i + 1}`}                  onClick={() => {
                     addToast({
                       type: 'info',
-                      description: `Day ${i + 1}: ${level} posts. Click to view details.`
+                      description: `Ngày ${i + 1}: ${level} bài viết. Nhấn để xem chi tiết.`
                     });
                   }}
                 />
@@ -461,8 +461,8 @@ export function OverviewSection() {
             </div>
             
             <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-3">
-              <span>Less activity</span>
-              <span>More activity</span>
+              <span>Ít hoạt động</span>
+              <span>Nhiều hoạt động</span>
             </div>
           </Card>
 
@@ -472,11 +472,11 @@ export function OverviewSection() {
               <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center animate-pulse">
                 <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
               </div>
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Anomaly Detected</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Phát hiện bất thường</h3>
             </div>
             
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
-              Your followers are increasing beyond our predictions. It could be because someone shared one of your posts.
+              Số lượng người theo dõi đang tăng vượt dự đoán. Có thể do ai đó đã chia sẻ bài viết của bạn.
             </p>
             
             <div className="relative mb-4 sm:mb-6">
@@ -485,7 +485,7 @@ export function OverviewSection() {
                   <div key={i} className="flex-1 bg-teal-200 dark:bg-teal-700 rounded-t hover:bg-teal-300 dark:hover:bg-teal-600 transition-colors cursor-pointer" style={{ height: `${height}%` }}>
                     {height === 80 && (
                       <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded animate-bounce">
-                        +10K Followers
+                        +10K Người theo dõi
                       </div>
                     )}
                   </div>
@@ -496,16 +496,16 @@ export function OverviewSection() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <div>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{animatedStats.engagement.toFixed(1)}%</p>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Prediction</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Dự đoán</p>
               </div>
               <div className="text-right sm:text-left">
                 <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">45%</p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">Secondary</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500">Phụ</p>
               </div>
             </div>
             
             <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors" size="sm">
-              See Details
+              Xem chi tiết
             </Button>
           </Card>
         </div>        {/* Right Column */}
@@ -516,12 +516,12 @@ export function OverviewSection() {
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
               <div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Post Schedule</h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">26 posts scheduled</p>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Lịch đăng bài</h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">26 bài viết đã lên lịch</p>
               </div>
               <Button size="sm" variant="outline" className="text-blue-600 border-blue-200 text-xs sm:text-sm w-full sm:w-auto">
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
-                Add Post
+                Thêm bài viết
               </Button>
             </div>
             
@@ -532,7 +532,7 @@ export function OverviewSection() {
                   <div className="w-2 h-2 bg-yellow-400 rounded-full mt-1"></div>
                 </div>
                 <div className="flex-1 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">🕘 Competitions can trigger bigger engagement boosts</p>
+                  <p className="text-xs sm:text-sm">🕘 Các cuộc thi có thể kích thích tương tác lớn hơn</p>
                 </div>
               </div>
               
@@ -547,7 +547,7 @@ export function OverviewSection() {
                       <span className="text-xs">🍕</span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-medium truncate">More weekend to healthier choices as you start to...</p>
+                      <p className="text-xs sm:text-sm font-medium truncate">Cuối tuần nhiều thời gian hơn cho những lựa chọn lành mạnh...</p>
                     </div>
                   </div>
                 </div>
@@ -559,7 +559,7 @@ export function OverviewSection() {
                   <div className="w-2 h-2 bg-pink-400 rounded-full mt-1"></div>
                 </div>
                 <div className="flex-1 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg border-l-4 border-pink-400 hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">💝 Giving people back and you can focus to...</p>
+                  <p className="text-xs sm:text-sm">💝 Tri ân mọi người và bạn có thể tập trung vào...</p>
                 </div>
               </div>
               
@@ -569,7 +569,7 @@ export function OverviewSection() {
                   <div className="w-2 h-2 bg-gray-400 rounded-full mt-1"></div>
                 </div>
                 <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">Weekly brand story and industry focus</p>
+                  <p className="text-xs sm:text-sm">Câu chuyện thương hiệu hàng tuần và tiêu điểm ngành</p>
                 </div>
               </div>
             </div>
@@ -578,25 +578,25 @@ export function OverviewSection() {
           {/* 6. Post Insights Card */}
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Post Insights</h3>
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Thông tin chi tiết bài viết</h3>
               <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center">
                 <span className="text-xs">📊</span>
               </div>
             </div>
             
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">Posted on May 15, 2024 at 1:00PM</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">Đã đăng vào ngày 15 tháng 5, 2024 lúc 13:00</p>
             
             <div className="space-y-4 mb-4 sm:mb-6">
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Accounts Reached</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Tài khoản tiếp cận</p>
                 <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                   {animatedStats.reach.toLocaleString()}
                 </p>
               </div>
               
               <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Followers</p>
-                <p className="text-base sm:text-lg font-bold text-blue-600">+2,953</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Người theo dõi</p>
+                <p className="text-base sm:text-lg font-bold text-blue-600">+2.953</p>
               </div>
             </div>
             
@@ -607,19 +607,19 @@ export function OverviewSection() {
                     key={i} 
                     className="flex-1 bg-blue-400 dark:bg-blue-600 rounded-t hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors cursor-pointer" 
                     style={{ height: `${height}%` }}
-                    title={`Engagement: ${height}%`}
+                    title={`Tương tác: ${height}%`}
                   />
                 ))}
               </div>
             </div>
             
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4">
-              <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Unique Finding</h4>
+              <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Phát hiện độc đáo</h4>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">
-                We have provided a new reach and followers analysis. See why this post worked statistically.
+                Chúng tôi đã cung cấp phân tích mới về lượt tiếp cận và người theo dõi. Xem tại sao bài viết này hiệu quả về mặt thống kê.
               </p>
               <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto text-xs sm:text-sm">
-                Subscribe for another finding
+                Đăng ký nhận phân tích khác
               </Button>
             </div>
           </Card>
@@ -631,7 +631,7 @@ export function OverviewSection() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Add New Account</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Thêm tài khoản mới</h3>
               <Button 
                 size="sm" 
                 variant="ghost" 
@@ -644,7 +644,7 @@ export function OverviewSection() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Platform
+                  Nền tảng
                 </label>
                 <select className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                   <option>Instagram</option>
@@ -655,11 +655,11 @@ export function OverviewSection() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  Username
+                  Tên người dùng
                 </label>
                 <input 
                   type="text" 
-                  placeholder="@username"
+                  placeholder="@tennguoidung"
                   className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500"
                 />
               </div>
@@ -669,18 +669,18 @@ export function OverviewSection() {
                   className="flex-1" 
                   onClick={() => setShowAddAccountModal(false)}
                 >
-                  Cancel
+                  Hủy
                 </Button>                <Button 
                   className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
                   onClick={() => {
                     setShowAddAccountModal(false);
                     addToast({
                       type: 'success',
-                      description: 'Account connected successfully!'
+                      description: 'Kết nối tài khoản thành công!'
                     });
                   }}
                 >
-                  Connect Account
+                  Kết nối tài khoản
                 </Button>
               </div>
             </div>
@@ -691,7 +691,7 @@ export function OverviewSection() {
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 w-full max-w-2xl shadow-2xl max-h-[80vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Help & Keyboard Shortcuts</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Trợ giúp & Phím tắt bàn phím</h3>
               <Button 
                 size="sm" 
                 variant="ghost" 
@@ -704,53 +704,53 @@ export function OverviewSection() {
             
             <div className="space-y-6">
               <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Keyboard Shortcuts</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Phím tắt bàn phím</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Refresh data</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Làm mới dữ liệu</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Ctrl + R</code>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Add account</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Thêm tài khoản</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Ctrl + Shift + A</code>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Show help</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Hiển thị trợ giúp</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Ctrl + H</code>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Switch to locations tab</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Chuyển sang tab vị trí</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">1</code>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Switch to age tab</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Chuyển sang tab độ tuổi</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">2</code>
                   </div>
                   <div className="flex justify-between items-center p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Close modals</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">Đóng hộp thoại</span>
                     <code className="px-2 py-1 bg-gray-200 dark:bg-gray-600 rounded text-xs">Escape</code>
                   </div>
                 </div>
               </div>
               
               <div>
-                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Features</h4>
+                <h4 className="font-medium text-gray-900 dark:text-white mb-3">Tính năng</h4>
                 <div className="space-y-3">
                   <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-1">Real-time Updates</h5>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">Dashboard updates every second with current time and connection status.</p>
+                    <h5 className="font-medium text-blue-900 dark:text-blue-100 mb-1">Cập nhật thời gian thực</h5>
+                    <p className="text-sm text-blue-700 dark:text-blue-300">Bảng điều khiển cập nhật mỗi giây với thời gian hiện tại và trạng thái kết nối mạng.</p>
                   </div>
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                    <h5 className="font-medium text-green-900 dark:text-green-100 mb-1">Data Export</h5>
-                    <p className="text-sm text-green-700 dark:text-green-300">Export your analytics data in JSON or CSV format using the buttons in the status bar.</p>
+                    <h5 className="font-medium text-green-900 dark:text-green-100 mb-1">Xuất dữ liệu</h5>
+                    <p className="text-sm text-green-700 dark:text-green-300">Xuất dữ liệu phân tích của bạn ở định dạng JSON hoặc CSV bằng cách sử dụng các nút trên thanh trạng thái.</p>
                   </div>
                   <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                    <h5 className="font-medium text-purple-900 dark:text-purple-100 mb-1">Interactive Charts</h5>
-                    <p className="text-sm text-purple-700 dark:text-purple-300">Click on calendar days and chart elements to see detailed information.</p>
+                    <h5 className="font-medium text-purple-900 dark:text-purple-100 mb-1">Biểu đồ tương tác</h5>
+                    <p className="text-sm text-purple-700 dark:text-purple-300">Nhấp vào các ngày trên lịch hoặc các thành phần biểu đồ để xem thông tin chi tiết.</p>
                   </div>
                   <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-                    <h5 className="font-medium text-orange-900 dark:text-orange-100 mb-1">Responsive Design</h5>
-                    <p className="text-sm text-orange-700 dark:text-orange-300">Optimized for all devices from mobile phones to large desktop screens.</p>
+                    <h5 className="font-medium text-orange-900 dark:text-orange-100 mb-1">Thiết kế tương thích (Responsive)</h5>
+                    <p className="text-sm text-orange-700 dark:text-orange-300">Được tối ưu hóa hoàn hảo cho mọi thiết bị từ điện thoại di động đến màn hình máy tính lớn.</p>
                   </div>
                 </div>
               </div>
@@ -761,7 +761,7 @@ export function OverviewSection() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 onClick={() => setShowHelpModal(false)}
               >
-                Got it, thanks!
+                Đã hiểu, cảm ơn!
               </Button>
             </div>
           </div>

@@ -8,7 +8,7 @@ import { Eye, MessageCircle, BarChart3, Target, Globe, Clock } from "lucide-reac
 Chart.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, ArcElement, Tooltip, Legend);
 
 const followerGrowthData = {
-  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  labels: ["Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4", "Tháng 5", "Tháng 6"],
   datasets: [
     {
       label: "Facebook",
@@ -41,7 +41,7 @@ const engagementRateData = {
   labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
   datasets: [
     {
-      label: "Engagement Rate (%)",
+      label: "Tỷ lệ tương tác (%)",
       data: [3.8, 5.2, 2.9, 4.1, 8.7],
       backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
     },
@@ -49,10 +49,10 @@ const engagementRateData = {
 };
 
 const reachData = {
-  labels: ["Organic", "Paid", "Viral", "Other"],
+  labels: ["Tự nhiên (Organic)", "Trả phí (Paid)", "Lan truyền (Viral)", "Khác (Other)"],
   datasets: [
     {
-      label: "Reach Distribution",
+      label: "Phân bổ lượt tiếp cận",
       data: [320000, 180000, 44000, 12000],
       backgroundColor: ["#10b981", "#f59e42", "#6366f1", "#ef4444"],
     },
@@ -63,7 +63,7 @@ const demographicsData = {
   labels: ["18-24", "25-34", "35-44", "45-54", "55+"],
   datasets: [
     {
-      label: "Age Distribution",
+      label: "Phân bổ độ tuổi",
       data: [25, 35, 22, 12, 6],
       backgroundColor: "#6366f1",
     },
@@ -73,48 +73,48 @@ const demographicsData = {
 export function AnalyticsSection() {
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold">Analytics & Insights</h2>
+      <h2 className="text-2xl font-bold">Phân tích & Thống kê</h2>
 
       {/* Key Performance Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng lượt tiếp cận</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">556K</div>
-            <p className="text-xs text-muted-foreground">+8.2% from last month</p>
+            <p className="text-xs text-muted-foreground">+8.2% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Impressions</CardTitle>
+            <CardTitle className="text-sm font-medium">Lượt hiển thị</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">2.4M</div>
-            <p className="text-xs text-muted-foreground">+15.3% from last month</p>
+            <p className="text-xs text-muted-foreground">+15.3% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Engagement</CardTitle>
+            <CardTitle className="text-sm font-medium">Tương tác</CardTitle>
             <MessageCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">21.5K</div>
-            <p className="text-xs text-muted-foreground">+12.7% from last month</p>
+            <p className="text-xs text-muted-foreground">+12.7% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Tỷ lệ chuyển đổi</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3.8%</div>
-            <p className="text-xs text-muted-foreground">+0.5% from last month</p>
+            <p className="text-xs text-muted-foreground">+0.5% so với tháng trước</p>
           </CardContent>
         </Card>
       </div>
@@ -123,7 +123,7 @@ export function AnalyticsSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Follower Growth Trends</CardTitle>
+            <CardTitle className="text-lg">Xu hướng tăng trưởng người theo dõi</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -147,7 +147,7 @@ export function AnalyticsSection() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Platform Engagement Rates</CardTitle>
+            <CardTitle className="text-lg">Tỷ lệ tương tác theo nền tảng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -166,7 +166,7 @@ export function AnalyticsSection() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Reach Distribution</CardTitle>
+            <CardTitle className="text-lg">Phân bổ lượt tiếp cận</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -186,7 +186,7 @@ export function AnalyticsSection() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Audience Demographics</CardTitle>
+            <CardTitle className="text-lg">Nhân khẩu học đối tượng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -210,17 +210,17 @@ export function AnalyticsSection() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Globe className="h-5 w-5" />
-              Top Performing Countries
+              Quốc gia hiệu quả nhất
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {[
-                { country: "United States", percentage: 45, followers: "137.3K" },
-                { country: "United Kingdom", percentage: 18, followers: "54.9K" },
+                { country: "Hoa Kỳ", percentage: 45, followers: "137.3K" },
+                { country: "Vương quốc Anh", percentage: 18, followers: "54.9K" },
                 { country: "Canada", percentage: 12, followers: "36.6K" },
-                { country: "Australia", percentage: 8, followers: "24.4K" },
-                { country: "Germany", percentage: 6, followers: "18.3K" },
+                { country: "Úc", percentage: 8, followers: "24.4K" },
+                { country: "Đức", percentage: 6, followers: "18.3K" },
               ].map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
                   <span className="text-sm font-medium">{item.country}</span>
@@ -244,17 +244,17 @@ export function AnalyticsSection() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5" />
-              Peak Engagement Times
+              Khung giờ tương tác cao điểm
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {[
-                { time: "9:00 AM - 11:00 AM", platform: "LinkedIn", engagement: "High" },
-                { time: "12:00 PM - 2:00 PM", platform: "Facebook", engagement: "Medium" },
-                { time: "6:00 PM - 8:00 PM", platform: "Instagram", engagement: "Very High" },
-                { time: "8:00 PM - 10:00 PM", platform: "TikTok", engagement: "High" },
-                { time: "10:00 AM - 12:00 PM", platform: "Twitter", engagement: "Medium" },
+                { time: "09:00 - 11:00", platform: "LinkedIn", engagement: "Cao" },
+                { time: "12:00 - 14:00", platform: "Facebook", engagement: "Trung bình" },
+                { time: "18:00 - 20:00", platform: "Instagram", engagement: "Rất cao" },
+                { time: "20:00 - 22:00", platform: "TikTok", engagement: "Cao" },
+                { time: "10:00 - 12:00", platform: "Twitter", engagement: "Trung bình" },
               ].map((item, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div>
@@ -263,9 +263,9 @@ export function AnalyticsSection() {
                   </div>
                   <span 
                     className={`text-xs px-2 py-1 rounded-full ${
-                      item.engagement === "Very High" 
+                      item.engagement === "Rất cao" 
                         ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                        : item.engagement === "High"
+                        : item.engagement === "Cao"
                         ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
                     }`}

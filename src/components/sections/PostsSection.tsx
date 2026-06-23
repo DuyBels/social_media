@@ -25,17 +25,17 @@ type Post = {
 const demoPosts: Post[] = [
   {
     id: "1",
-    content: "🚀 Exciting news! Our new summer collection is launching next week. Get ready for vibrant colors and sustainable materials that will transform your wardrobe! #SummerFashion #Sustainable #NewCollection",
+    content: "🚀 Tin vui! Bộ sưu tập mùa hè mới của chúng tôi sẽ ra mắt vào tuần tới. Hãy sẵn sàng cho những màu sắc rực rỡ và chất liệu bền vững sẽ làm mới tủ đồ của bạn! #ThoitrangMuahe #Benvung #Bousuutapmoi",
     platforms: ["Instagram", "Facebook", "Twitter"],
     scheduledAt: "2025-06-12T10:00:00Z",
     status: "scheduled",
     mediaType: "carousel",
-    tags: ["summer", "fashion", "sustainable", "launch"],
-    campaign: "Summer Product Launch",
+    tags: ["muahe", "thoitrang", "benvung", "ramat"],
+    campaign: "Ra mắt sản phẩm mùa hè",
   },
   {
     id: "2",
-    content: "🎉 Milestone alert! We've just hit 10,000 amazing followers! Thank you for being part of our incredible journey. Here's to the next 10K! 💪 #Milestone #ThankYou #Community",
+    content: "🎉 Tin tức cột mốc! Chúng tôi vừa đạt 10.000 người theo dõi tuyệt vời! Cảm ơn bạn đã đồng hành cùng chúng tôi trên hành trình đáng kinh ngạc này. Cùng hướng tới 10K tiếp theo nào! 💪 #Cotmoc #CamOn #Congdong",
     platforms: ["Instagram", "Facebook", "LinkedIn"],
     scheduledAt: "2025-06-10T14:00:00Z",
     status: "posted",
@@ -46,31 +46,31 @@ const demoPosts: Post[] = [
       shares: 89,
       views: 15420,
     },
-    tags: ["milestone", "community", "thankyou"],
-    campaign: "Brand Awareness Q2",
+    tags: ["cotmoc", "congdong", "camon"],
+    campaign: "Nhận diện thương hiệu Q2",
   },
   {
     id: "3",
-    content: "⚠️ Maintenance Notice: Our servers will be undergoing scheduled maintenance tonight from 11 PM to 3 AM EST. We apologize for any inconvenience. #Maintenance #ServerUpdate",
+    content: "⚠️ Thông báo bảo trì: Máy chủ của chúng tôi sẽ tiến hành bảo trì định kỳ vào đêm nay từ 23:00 đến 03:00 sáng. Xin lỗi vì sự bất tiện này. #Baotri #Capnhatmaychu",
     platforms: ["Twitter", "LinkedIn"],
     scheduledAt: "2025-06-09T22:00:00Z",
     status: "failed",
     mediaType: "text",
-    tags: ["maintenance", "notice", "server"],
+    tags: ["baotri", "thongbao", "maychu"],
   },
   {
     id: "4",
-    content: "💡 Behind the scenes: Ever wondered how we create our products? Take a peek into our design studio where innovation meets creativity! #BehindTheScenes #Design #Innovation",
+    content: "💡 Hậu trường: Bạn đã bao giờ tự hỏi chúng tôi tạo ra sản phẩm như thế nào chưa? Hãy cùng ghé thăm studio thiết kế của chúng tôi, nơi sự đổi mới gặp gỡ tính sáng tạo! #Hautruong #Thietke #Sangsang",
     platforms: ["TikTok", "Instagram"],
     scheduledAt: "2025-06-13T16:00:00Z",
     status: "scheduled",
     mediaType: "video",
-    tags: ["behindthescenes", "design", "innovation"],
-    campaign: "Gen Z Engagement",
+    tags: ["hautruong", "thietke", "sangsang"],
+    campaign: "Tương tác với thế hệ Z",
   },
   {
     id: "5",
-    content: "📊 Industry Insight: The future of social media marketing lies in authentic storytelling and genuine community building. What's your take? #MarketingTips #Industry #SocialMedia",
+    content: "📊 Góc nhìn chuyên môn: Tương lai của tiếp thị mạng xã hội nằm ở những câu chuyện chân thực và xây dựng cộng đồng gắn kết. Ý kiến của bạn thế nào? #Meotiepthi #Chuyennganh #Mangxahoi",
     platforms: ["LinkedIn"],
     scheduledAt: "2025-06-11T09:00:00Z",
     status: "posted",
@@ -81,17 +81,17 @@ const demoPosts: Post[] = [
       shares: 45,
       views: 3420,
     },
-    tags: ["marketing", "industry", "insights"],
-    campaign: "B2B Lead Generation",
+    tags: ["tiepthi", "chuyennganh", "gocnhin"],
+    campaign: "Thu hút khách hàng B2B",
   },
   {
     id: "6",
-    content: "🌟 Customer Spotlight: Meet Sarah, who transformed her style with our pieces! Share your transformation story in the comments. #CustomerSpotlight #Transformation #Style",
+    content: "🌟 Góc khách hàng: Gặp gỡ Sarah, người đã thay đổi phong cách của mình với các sản phẩm của chúng tôi! Hãy chia sẻ câu câu chuyện thay đổi của bạn trong phần bình luận nhé. #Khachhang #Thaydoi #Phongcach",
     platforms: ["Instagram", "Facebook"],
     scheduledAt: "2025-06-14T12:00:00Z",
     status: "draft",
     mediaType: "image",
-    tags: ["customer", "spotlight", "transformation"],
+    tags: ["khachhang", "noibat", "thaydoi"],
   },
 ];
 
@@ -102,6 +102,16 @@ export function PostsSection() {
   const handleAdd = () => {};
   const handleEdit = () => {};
   const handleDelete = () => {};
+
+  const getStatusText = (status: string) => {
+    const texts: Record<string, string> = {
+      scheduled: "Đã lên lịch",
+      posted: "Đã đăng",
+      failed: "Thất bại",
+      draft: "Bản nháp",
+    };
+    return texts[status] || status;
+  };
 
   const getPlatformColor = (platform: string) => {
     const colors: Record<string, string> = {
@@ -131,10 +141,10 @@ export function PostsSection() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-xl font-bold">Content Management</h2>
+        <h2 className="text-xl font-bold">Quản lý nội dung</h2>
         <Button onClick={handleAdd} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
-          Create Post
+          Tạo bài viết
         </Button>
       </div>
 
@@ -142,42 +152,42 @@ export function PostsSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Posts</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng số bài viết</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalPosts}</div>
-            <p className="text-xs text-muted-foreground">All content pieces</p>
+            <p className="text-xs text-muted-foreground">Tất cả các nội dung</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scheduled</CardTitle>
+            <CardTitle className="text-sm font-medium">Lên lịch</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{scheduledPosts}</div>
-            <p className="text-xs text-muted-foreground">Ready to publish</p>
+            <p className="text-xs text-muted-foreground">Sẵn sàng xuất bản</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Published</CardTitle>
+            <CardTitle className="text-sm font-medium">Đã đăng</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{postedPosts}</div>
-            <p className="text-xs text-muted-foreground">Live content</p>
+            <p className="text-xs text-muted-foreground">Nội dung hiển thị</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Drafts</CardTitle>
+            <CardTitle className="text-sm font-medium">Bản nháp</CardTitle>
             <Edit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{draftPosts}</div>
-            <p className="text-xs text-muted-foreground">Work in progress</p>
+            <p className="text-xs text-muted-foreground">Đang chuẩn bị</p>
           </CardContent>
         </Card>
       </div>
@@ -196,7 +206,7 @@ export function PostsSection() {
                       <span className="font-medium">{new Date(post.scheduledAt).toLocaleString()}</span>
                     </div>
                     {post.campaign && (
-                      <p className="text-xs text-muted-foreground">Campaign: {post.campaign}</p>
+                      <p className="text-xs text-muted-foreground">Chiến dịch: {post.campaign}</p>
                     )}
                   </div>
                 </div>
@@ -212,7 +222,7 @@ export function PostsSection() {
                         : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                     }`}
                   >
-                    {post.status.charAt(0).toUpperCase() + post.status.slice(1)}
+                    {getStatusText(post.status)}
                   </span>
                 </div>
               </div>
@@ -226,7 +236,7 @@ export function PostsSection() {
               {/* Platforms & Tags */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-2">Platforms</h4>
+                  <h4 className="text-sm font-medium mb-2">Nền tảng</h4>
                   <div className="flex flex-wrap gap-2">
                     {post.platforms.map((platform) => (
                       <span
@@ -240,7 +250,7 @@ export function PostsSection() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-sm font-medium mb-2">Tags</h4>
+                  <h4 className="text-sm font-medium mb-2">Thẻ</h4>
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag) => (
                       <span
@@ -257,40 +267,41 @@ export function PostsSection() {
               {/* Engagement Stats (for posted content) */}
               {post.engagement && (
                 <div className="border-t pt-4">
-                  <h4 className="text-sm font-medium mb-3">Performance</h4>
+                  <h4 className="text-sm font-medium mb-3">Hiệu suất</h4>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <div className="flex items-center gap-2 text-sm">
                       <Heart className="h-4 w-4 text-red-500" />
                       <span className="font-medium">{post.engagement.likes.toLocaleString()}</span>
-                      <span className="text-muted-foreground">likes</span>
+                      <span className="text-muted-foreground">lượt thích</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <MessageCircle className="h-4 w-4 text-blue-500" />
                       <span className="font-medium">{post.engagement.comments.toLocaleString()}</span>
-                      <span className="text-muted-foreground">comments</span>
+                      <span className="text-muted-foreground">bình luận</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Share className="h-4 w-4 text-green-500" />
                       <span className="font-medium">{post.engagement.shares.toLocaleString()}</span>
-                      <span className="text-muted-foreground">shares</span>
+                      <span className="text-muted-foreground">chia sẻ</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <Eye className="h-4 w-4 text-purple-500" />
                       <span className="font-medium">{post.engagement.views.toLocaleString()}</span>
-                      <span className="text-muted-foreground">views</span>
+                      <span className="text-muted-foreground">lượt xem</span>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Actions */}              <div className="flex justify-end gap-2 pt-4 border-t">
+              {/* Actions */}
+              <div className="flex justify-end gap-2 pt-4 border-t">
                 <Button variant="outline" size="sm" onClick={handleEdit}>
                   <Edit className="mr-2 h-4 w-4" />
-                  Edit
+                  Sửa
                 </Button>
                 <Button variant="destructive" size="sm" onClick={handleDelete}>
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  Xóa
                 </Button>
               </div>
             </CardContent>

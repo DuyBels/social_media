@@ -29,7 +29,7 @@ type Campaign = {
 const demoCampaigns: Campaign[] = [
   {
     id: "1",
-    name: "Summer Product Launch",
+    name: "Ra mắt sản phẩm mùa hè",
     platform: "Facebook",
     status: "active",
     budget: 5000,
@@ -45,7 +45,7 @@ const demoCampaigns: Campaign[] = [
   },
   {
     id: "2",
-    name: "Brand Awareness Q2",
+    name: "Nhận diện thương hiệu Q2",
     platform: "Instagram",
     status: "active",
     budget: 3000,
@@ -61,7 +61,7 @@ const demoCampaigns: Campaign[] = [
   },
   {
     id: "3",
-    name: "Holiday Promotion",
+    name: "Khuyến mãi ngày lễ",
     platform: "Twitter",
     status: "completed",
     budget: 2000,
@@ -77,7 +77,7 @@ const demoCampaigns: Campaign[] = [
   },
   {
     id: "4",
-    name: "B2B Lead Generation",
+    name: "Thu hút khách hàng B2B",
     platform: "LinkedIn",
     status: "active",
     budget: 4000,
@@ -93,7 +93,7 @@ const demoCampaigns: Campaign[] = [
   },
   {
     id: "5",
-    name: "Gen Z Engagement",
+    name: "Tương tác với thế hệ Z",
     platform: "TikTok",
     status: "paused",
     budget: 1500,
@@ -113,7 +113,7 @@ const platformData = {
   labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
   datasets: [
     {
-      label: "Budget Allocation",
+      label: "Phân bổ ngân sách",
       data: [5000, 3000, 2000, 4000, 1500],
       backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
     },
@@ -121,10 +121,10 @@ const platformData = {
 };
 
 const performanceData = {
-  labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
   datasets: [
     {
-      label: "Conversions",
+      label: "Lượt chuyển đổi",
       data: [45, 67, 89, 127],
       borderColor: "#10b981",
       backgroundColor: "rgba(16,185,129,0.1)",
@@ -177,6 +177,16 @@ export function CampaignsSection() {
     // TODO: Delete campaign functionality
   };
 
+  const getStatusText = (status: string) => {
+    const texts: Record<string, string> = {
+      active: "Hoạt động",
+      paused: "Tạm dừng",
+      completed: "Hoàn thành",
+      draft: "Bản nháp",
+    };
+    return texts[status] || status;
+  };
+
   const totalBudget = campaigns.reduce((sum, c) => sum + c.budget, 0);
   const totalSpent = campaigns.reduce((sum, c) => sum + c.spent, 0);
   const totalConversions = campaigns.reduce((sum, c) => sum + c.conversions, 0);
@@ -185,10 +195,10 @@ export function CampaignsSection() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <h2 className="text-2xl font-bold">Campaign Management</h2>
+        <h2 className="text-2xl font-bold">Quản lý chiến dịch</h2>
         <Button onClick={handleAdd} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
-          Create Campaign
+          Tạo chiến dịch
         </Button>
       </div>
 
@@ -196,42 +206,42 @@ export function CampaignsSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng ngân sách</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalBudget.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Across all campaigns</p>
+            <p className="text-xs text-muted-foreground">Cho tất cả các chiến dịch</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Spent</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng chi tiêu</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">${totalSpent.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">{((totalSpent/totalBudget)*100).toFixed(1)}% of budget used</p>
+            <p className="text-xs text-muted-foreground">{((totalSpent/totalBudget)*100).toFixed(1)}% ngân sách đã dùng</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conversions</CardTitle>
+            <CardTitle className="text-sm font-medium">Chuyển đổi</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{totalConversions}</div>
-            <p className="text-xs text-muted-foreground">Total conversions</p>
+            <p className="text-xs text-muted-foreground">Tổng lượt chuyển đổi</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg ROAS</CardTitle>
+            <CardTitle className="text-sm font-medium">ROAS trung bình</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{avgROAS.toFixed(1)}x</div>
-            <p className="text-xs text-muted-foreground">Return on ad spend</p>
+            <p className="text-xs text-muted-foreground">Tỷ suất lợi nhuận trên chi phí quảng cáo (ROAS)</p>
           </CardContent>
         </Card>
       </div>
@@ -240,7 +250,7 @@ export function CampaignsSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Budget by Platform</CardTitle>
+            <CardTitle className="text-lg">Ngân sách theo nền tảng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -259,7 +269,7 @@ export function CampaignsSection() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Performance Trends</CardTitle>
+            <CardTitle className="text-lg">Xu hướng hiệu suất</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-56">
@@ -293,7 +303,7 @@ export function CampaignsSection() {
       {/* Campaign List */}
       <Card>
         <CardHeader>
-          <CardTitle>Active Campaigns</CardTitle>
+          <CardTitle>Chiến dịch đang chạy</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -311,20 +321,20 @@ export function CampaignsSection() {
                           campaign.status === "active"
                             ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                             : campaign.status === "paused"
-                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                            ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 text-yellow-200"
                             : campaign.status === "completed"
                             ? "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200"
                             : "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                         }`}
                       >
-                        {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                        {getStatusText(campaign.status)}
                       </span>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm text-muted-foreground">
-                    <div>Budget: ${campaign.budget.toLocaleString()}</div>
-                    <div>Spent: ${campaign.spent.toLocaleString()}</div>
-                    <div>Conversions: {campaign.conversions}</div>
+                    <div>Ngân sách: ${campaign.budget.toLocaleString()}</div>
+                    <div>Đã chi tiêu: ${campaign.spent.toLocaleString()}</div>
+                    <div>Lượt chuyển đổi: {campaign.conversions}</div>
                     <div>ROAS: {campaign.roas}x</div>
                   </div>
                 </div>                <div className="flex gap-2">

@@ -11,7 +11,7 @@ const platformPostsData = {
   labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
   datasets: [
     {
-      label: "Posts This Week",
+      label: "Bài viết tuần này",
       data: [15, 22, 18, 8, 12],
       backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
     },
@@ -19,10 +19,10 @@ const platformPostsData = {
 };
 
 const engagementData = {
-  labels: ["Likes", "Comments", "Shares", "Saves"],
+  labels: ["Lượt thích", "Bình luận", "Chia sẻ", "Lượt lưu"],
   datasets: [
     {
-      label: "Total Engagement",
+      label: "Tổng lượt tương tác",
       data: [15420, 3280, 1950, 870],
       backgroundColor: ["#ef4444", "#f59e42", "#10b981", "#6366f1"],
     },
@@ -30,10 +30,10 @@ const engagementData = {
 };
 
 const weeklyTrendsData = {
-  labels: ["Week 1", "Week 2", "Week 3", "Week 4"],
+  labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
   datasets: [
     {
-      label: "Followers Growth",
+      label: "Tăng trưởng người theo dõi",
       data: [1250, 1890, 2340, 2890],
       borderColor: "#10b981",
       backgroundColor: "rgba(16,185,129,0.1)",
@@ -41,7 +41,7 @@ const weeklyTrendsData = {
       fill: true,
     },
     {
-      label: "Impressions (000s)",
+      label: "Lượt hiển thị (nghìn)",
       data: [245, 289, 334, 398],
       borderColor: "#6366f1",
       backgroundColor: "rgba(99,102,241,0.1)",
@@ -66,42 +66,42 @@ export function DashboardSection() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Followers</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng người theo dõi</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">305.2K</div>
-            <p className="text-xs text-muted-foreground">+12.3% from last month</p>
+            <p className="text-xs text-muted-foreground">+12.3% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Reach</CardTitle>
+            <CardTitle className="text-sm font-medium">Tổng lượt tiếp cận</CardTitle>
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">544K</div>
-            <p className="text-xs text-muted-foreground">+8.7% from last month</p>
+            <p className="text-xs text-muted-foreground">+8.7% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Engagement Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">Tỷ lệ tương tác</CardTitle>
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">4.8%</div>
-            <p className="text-xs text-muted-foreground">+0.3% from last month</p>
+            <p className="text-xs text-muted-foreground">+0.3% so với tháng trước</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">ROI</CardTitle>
+            <CardTitle className="text-sm font-medium">Tỷ suất hoàn vốn (ROI)</CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">3.2x</div>
-            <p className="text-xs text-muted-foreground">+0.4x from last month</p>
+            <p className="text-xs text-muted-foreground">+0.4x so với tháng trước</p>
           </CardContent>
         </Card>
       </div>
@@ -110,7 +110,7 @@ export function DashboardSection() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Posts by Platform</CardTitle>
+            <CardTitle className="text-lg">Bài viết theo nền tảng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-48">
@@ -128,7 +128,7 @@ export function DashboardSection() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Engagement Mix</CardTitle>
+            <CardTitle className="text-lg">Phân bổ tương tác</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-48">
@@ -147,7 +147,7 @@ export function DashboardSection() {
         </Card>
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg">Growth Trends</CardTitle>
+            <CardTitle className="text-lg">Xu hướng tăng trưởng</CardTitle>
           </CardHeader>
           <CardContent className="pb-4">
             <div className="h-48">
@@ -173,7 +173,7 @@ export function DashboardSection() {
       {/* Platform Performance Grid */}
       <Card>
         <CardHeader>
-          <CardTitle>Platform Performance Overview</CardTitle>
+          <CardTitle>Tổng quan hiệu suất nền tảng</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
@@ -188,15 +188,15 @@ export function DashboardSection() {
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Followers:</span>
+                    <span className="text-muted-foreground">Người theo dõi:</span>
                     <span className="font-medium">{platform.followers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Engagement:</span>
+                    <span className="text-muted-foreground">Tương tác:</span>
                     <span className="font-medium">{platform.engagement}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Reach:</span>
+                    <span className="text-muted-foreground">Tiếp cận:</span>
                     <span className="font-medium">{platform.reach}</span>
                   </div>
                 </div>
@@ -210,15 +210,15 @@ export function DashboardSection() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Top Performing Posts</CardTitle>
+            <CardTitle>Bài viết hiệu quả nhất</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {[
-                { platform: "Instagram", content: "Summer collection launch 🌞", engagement: "2.3K", color: "#e4405f" },
-                { platform: "TikTok", content: "Behind the scenes video", engagement: "5.7K", color: "#000000" },
-                { platform: "Facebook", content: "Customer testimonial feature", engagement: "1.8K", color: "#1877f2" },
-                { platform: "LinkedIn", content: "Industry insights article", engagement: "892", color: "#0077b5" },
+                { platform: "Instagram", content: "Ra mắt bộ sưu tập mùa hè 🌞", engagement: "2.3K", color: "#e4405f" },
+                { platform: "TikTok", content: "Video hậu trường", engagement: "5.7K", color: "#000000" },
+                { platform: "Facebook", content: "Đánh giá từ khách hàng nổi bật", engagement: "1.8K", color: "#1877f2" },
+                { platform: "LinkedIn", content: "Bài viết chia sẻ chuyên môn", engagement: "892", color: "#0077b5" },
               ].map((post, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
@@ -231,8 +231,8 @@ export function DashboardSection() {
                       <p className="text-xs text-muted-foreground">{post.platform}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-1 text-sm">
-                    <Heart className="h-3 w-3" />
+                  <div className="flex items-center gap-1 text-sm text-red-500">
+                    <Heart className="h-3 w-3 fill-current" />
                     {post.engagement}
                   </div>
                 </div>
@@ -243,25 +243,25 @@ export function DashboardSection() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle>Thao tác nhanh</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 gap-4">
               <button className="p-4 border rounded-lg text-center hover:bg-accent hover:text-accent-foreground transition-colors">
                 <MessageCircle className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Create Post</span>
+                <span className="text-sm font-medium">Tạo bài viết</span>
               </button>
               <button className="p-4 border rounded-lg text-center hover:bg-accent hover:text-accent-foreground transition-colors">
                 <Target className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">New Campaign</span>
+                <span className="text-sm font-medium">Chiến dịch mới</span>
               </button>
               <button className="p-4 border rounded-lg text-center hover:bg-accent hover:text-accent-foreground transition-colors">
                 <TrendingUp className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">View Analytics</span>
+                <span className="text-sm font-medium">Xem phân tích</span>
               </button>
               <button className="p-4 border rounded-lg text-center hover:bg-accent hover:text-accent-foreground transition-colors">
                 <Users className="h-6 w-6 mx-auto mb-2" />
-                <span className="text-sm font-medium">Manage Users</span>
+                <span className="text-sm font-medium">Quản lý thành viên</span>
               </button>
             </div>
           </CardContent>
