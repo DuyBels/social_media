@@ -56,11 +56,20 @@ export function PublishPost() {
       formData.append("video", videoFile);
 
       // 3. Gửi request POST tới địa chỉ n8n Webhook
+      // Lấy URL cơ sở từ biến môi trường (mặc định là localhost)
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5678/webhook";
+      
+      // Đảm bảo đường dẫn chính xác (hỗ trợ cả chạy thử nghiệm /webhook-test)
+      const url = baseUrl.endsWith("/") ? `${baseUrl}posts` : `${baseUrl}/posts`;
+
       // LƯU Ý QUAN TRỌNG: Không set header 'Content-Type' thủ công khi gửi FormData,
       // để trình duyệt tự động định nghĩa kèm theo ranh giới boundary phù hợp.
-      const response = await fetch("http://localhost:5678/webhook/posts", {
+      const response = await fetch(url, {
         method: "POST",
         body: formData,
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
       });
 
       // 4. Xử lý phản hồi kết quả
