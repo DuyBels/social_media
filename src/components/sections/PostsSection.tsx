@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Edit, Trash2, Calendar, Eye, Heart, MessageCircle, Share, BarChart3, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Calendar, Eye, Heart, MessageCircle, Share, BarChart3, Clock, X } from "lucide-react";
+import { PublishPost } from "../PublishPost";
 
 type Post = {
   id: string;
   content: string;
-  platforms: ("Facebook" | "Instagram" | "Twitter" | "LinkedIn" | "TikTok")[];
+  platforms: ("Facebook" | "Instagram" | "Twitter" | "LinkedIn" | "TikTok" | "YouTube")[];
   scheduledAt: string;
   status: "scheduled" | "posted" | "failed" | "draft";
   mediaType: "text" | "image" | "video" | "carousel";
@@ -93,13 +94,31 @@ const demoPosts: Post[] = [
     mediaType: "image",
     tags: ["khachhang", "noibat", "thaydoi"],
   },
+  {
+    id: "7",
+    content: "🎥 Video hướng dẫn sử dụng sản phẩm mới của chúng tôi! Xem ngay để biết thêm chi tiết về các tính năng vượt trội. #Huongdan #Youtube #Video",
+    platforms: ["YouTube"],
+    scheduledAt: "2025-06-15T08:00:00Z",
+    status: "posted",
+    mediaType: "video",
+    engagement: {
+      likes: 4210,
+      comments: 312,
+      shares: 654,
+      views: 89400,
+    },
+    tags: ["huongdan", "video", "youtube"],
+  },
 ];
 
 export function PostsSection() {
   const [posts] = useState<Post[]>(demoPosts);
+  const [showPublishForm, setShowPublishForm] = useState(false);
 
   // Placeholder CRUD handlers
-  const handleAdd = () => {};
+  const handleAdd = () => {
+    setShowPublishForm(!showPublishForm);
+  };
   const handleEdit = () => {};
   const handleDelete = () => {};
 
@@ -120,6 +139,7 @@ export function PostsSection() {
       Twitter: "#1da1f2",
       LinkedIn: "#0077b5",
       TikTok: "#000000",
+      YouTube: "#FF0000",
     };
     return colors[platform] || "#6366f1";
   };
@@ -142,11 +162,26 @@ export function PostsSection() {
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h2 className="text-xl font-bold">Quản lý nội dung</h2>
-        <Button onClick={handleAdd} className="w-full sm:w-auto">
-          <Plus className="mr-2 h-4 w-4" />
-          Tạo bài viết
+        <Button onClick={handleAdd} variant={showPublishForm ? "outline" : "default"} className="w-full sm:w-auto">
+          {showPublishForm ? (
+            <>
+              <X className="mr-2 h-4 w-4" />
+              Đóng form
+            </>
+          ) : (
+            <>
+              <Plus className="mr-2 h-4 w-4" />
+              Tạo bài viết
+            </>
+          )}
         </Button>
       </div>
+
+      {showPublishForm && (
+        <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-200">
+          <PublishPost />
+        </div>
+      )}
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
