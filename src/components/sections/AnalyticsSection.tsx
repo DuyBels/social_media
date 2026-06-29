@@ -19,10 +19,10 @@ const followerGrowthData = {
       fill: true,
     },
     {
-      label: "Instagram",
-      data: [58000, 61000, 63500, 65200, 66800, 67800],
-      borderColor: "#e4405f",
-      backgroundColor: "rgba(228,64,95,0.1)",
+      label: "YouTube",
+      data: [8000, 9200, 10100, 11200, 12000, 12500],
+      borderColor: "#FF0000",
+      backgroundColor: "rgba(255,0,0,0.1)",
       tension: 0.4,
       fill: true,
     },
@@ -34,16 +34,24 @@ const followerGrowthData = {
       tension: 0.4,
       fill: true,
     },
+    {
+      label: "Zalo",
+      data: [1500, 1800, 2200, 2600, 2900, 3200],
+      borderColor: "#0068FF",
+      backgroundColor: "rgba(0,104,255,0.1)",
+      tension: 0.4,
+      fill: true,
+    },
   ],
 };
 
 const engagementRateData = {
-  labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
+  labels: ["YouTube", "Zalo", "TikTok", "Facebook"],
   datasets: [
     {
       label: "Tỷ lệ tương tác (%)",
-      data: [3.8, 5.2, 2.9, 4.1, 8.7],
-      backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
+      data: [4.8, 3.5, 8.7, 3.8],
+      backgroundColor: ["#FF0000", "#0068FF", "#000000", "#1877f2"],
     },
   ],
 };

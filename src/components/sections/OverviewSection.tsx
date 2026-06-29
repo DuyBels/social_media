@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { TrendingUp, Plus, Instagram, MoreHorizontal, X, Bell, Share2, RefreshCw, AlertTriangle } from "lucide-react";
+import { TrendingUp, Plus, Youtube, Facebook, MessageCircle, Video, MoreHorizontal, X, Bell, Share2, RefreshCw, AlertTriangle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Tooltip } from "@/components/ui/tooltip";
 import { useToast } from "@/components/ui/toast";
 import { useResponsive } from "@/hooks/useResponsive";
 import { useKeyboardShortcuts } from "@/hooks/useAccessibility";
+import { apiFetch } from "@/lib/apiClient";
 
 export function OverviewSection() {
   const { addToast, ToastContainer } = useToast();
@@ -22,10 +23,28 @@ export function OverviewSection() {
     followers: 0,
     reach: 0,
     engagement: 0
-  });  const [notifications, setNotifications] = useState([
-    { id: 1, message: "Đạt cột mốc người theo dõi mới!", type: "success", time: "2 phút trước" },
-    { id: 2, message: "Đã lên lịch bài viết lúc 14:00", type: "info", time: "5 phút trước" }
-  ]);
+  });  const [notifications, setNotifications] = useState<{ id: string | number; message: string; type: string; time: string }[]>([]);
+
+  const fetchNotifications = async () => {
+    const result = await apiFetch<{ id: string | number; message: string; type: string; time: string }[]>("notifications");
+    if (result.success && result.data) {
+      setNotifications(result.data);
+    } else {
+      setNotifications([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+
+    // Thiết lập tự động lấy thông báo mới sau mỗi 30 giây
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isOnline, setIsOnline] = useState(true);
 
@@ -133,7 +152,7 @@ export function OverviewSection() {
     addToast({ description: "Làm mới dữ liệu thành công!", type: "success" });
   }, [addToast]);
   // Dismiss notification handler
-  const dismissNotification = (id: number) => {
+  const dismissNotification = (id: number | string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
     addToast({ description: "Đã ẩn thông báo", type: "info" });
   };
@@ -177,17 +196,25 @@ export function OverviewSection() {
       {/* Notifications Bar */}
       <div className="max-w-7xl mx-auto mb-4 animate-fade-in-up">
         <div className="flex flex-wrap gap-2">
-          {notifications.map((notification) => (
-            <div key={notification.id} className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm text-sm border border-white/20 dark:border-gray-700/20 animate-slide-in-right">
-              <Bell className="h-4 w-4 text-blue-500 animate-pulse-slow" />
-              <span className="text-gray-700 dark:text-gray-300">{notification.message}</span>
-              <span className="text-xs text-gray-500">{notification.time}</span>              <button 
-                onClick={() => dismissNotification(notification.id)}
-                className="ml-2 text-gray-400 hover:text-gray-600 transition-colors touch-friendly"
-              >
-                <X className="h-3 w-3" />
-              </button>            </div>
-          ))}
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <div key={notification.id} className="flex items-center gap-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg px-3 py-2 shadow-sm text-sm border border-white/20 dark:border-gray-700/20 animate-slide-in-right">
+                <Bell className="h-4 w-4 text-blue-500 animate-pulse-slow" />
+                <span className="text-gray-700 dark:text-gray-300">{notification.message}</span>
+                <span className="text-xs text-gray-500">{notification.time}</span>
+                <button 
+                  onClick={() => dismissNotification(notification.id)}
+                  className="ml-2 text-gray-400 hover:text-gray-600 transition-colors touch-friendly"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </div>
+            ))
+          ) : (
+            <div className="text-xs text-muted-foreground p-3 bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-lg border border-white/10 dark:border-gray-700/10">
+              Chưa có thông báo thực tế nào từ các kênh mạng xã hội đã tích hợp.
+            </div>
+          )}
         </div>
       </div>
 
@@ -260,8 +287,8 @@ export function OverviewSection() {
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <Instagram className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500 animate-pulse" />
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">@samanthawilliam_</span>
+                <Youtube className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 animate-pulse" />
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">@MyYouTubeChannel</span>
               </div>
               <div className="flex items-center gap-2">                <Button 
                   size="sm" 
@@ -388,30 +415,60 @@ export function OverviewSection() {
             </div>
             
             <div className="space-y-3 sm:space-y-4">
+              {/* YouTube */}
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs sm:text-sm font-medium">S</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-red-600 rounded-full flex items-center justify-center text-white">
+                    <Youtube className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@samanthawilliam_</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{animatedStats.followers.toLocaleString()} người theo dõi</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@MyYouTubeChannel</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">12.5K người đăng ký • Đã đăng nhập</p>
                   </div>
                 </div>
-                <Badge className="bg-pink-500 text-white hover:bg-pink-600 text-xs">Chính</Badge>
+                <Badge className="bg-green-600 text-white hover:bg-green-700 text-xs">Chính</Badge>
               </div>
-              
+
+              {/* Zalo */}
               <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs sm:text-sm font-medium">S</span>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#0068FF] rounded-full flex items-center justify-center text-white">
+                    <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
-                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@smanthawilliam_</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">4.982 người theo dõi</p>
+                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">Zalo Official Account</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Đang thực hiện tích hợp...</p>
                   </div>
                 </div>
-                <Button size="sm" variant="outline" className="text-xs">Quản lý</Button>
+                <Badge variant="outline" className="text-blue-600 border-blue-200 text-xs">Đang làm</Badge>
+              </div>
+
+              {/* TikTok */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-black rounded-full flex items-center justify-center text-white dark:bg-white dark:text-black">
+                    <Video className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">TikTok Account</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Chưa liên kết</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="outline" className="text-xs">Kết nối</Button>
+              </div>
+
+              {/* Facebook */}
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#1877f2] rounded-full flex items-center justify-center text-white">
+                    <Facebook className="h-4 w-4 sm:h-5 sm:w-5" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">Facebook Page</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Chưa liên kết</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="outline" className="text-xs">Kết nối</Button>
               </div>
             </div>
           </Card>
@@ -647,10 +704,10 @@ export function OverviewSection() {
                   Nền tảng
                 </label>
                 <select className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                  <option>Instagram</option>
-                  <option>Twitter</option>
+                  <option>YouTube</option>
+                  <option>Zalo</option>
+                  <option>TikTok</option>
                   <option>Facebook</option>
-                  <option>LinkedIn</option>
                 </select>
               </div>
               <div>

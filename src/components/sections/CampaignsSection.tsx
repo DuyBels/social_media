@@ -12,7 +12,7 @@ Chart.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement
 type Campaign = {
   id: string;
   name: string;
-  platform: "Facebook" | "Instagram" | "Twitter" | "LinkedIn" | "TikTok";
+  platform: "Facebook" | "TikTok" | "YouTube" | "Zalo";
   status: "active" | "paused" | "completed" | "draft";
   budget: number;
   spent: number;
@@ -46,7 +46,7 @@ const demoCampaigns: Campaign[] = [
   {
     id: "2",
     name: "Nhận diện thương hiệu Q2",
-    platform: "Instagram",
+    platform: "YouTube",
     status: "active",
     budget: 3000,
     spent: 2100,
@@ -62,7 +62,7 @@ const demoCampaigns: Campaign[] = [
   {
     id: "3",
     name: "Khuyến mãi ngày lễ",
-    platform: "Twitter",
+    platform: "Zalo",
     status: "completed",
     budget: 2000,
     spent: 1950,
@@ -77,22 +77,6 @@ const demoCampaigns: Campaign[] = [
   },
   {
     id: "4",
-    name: "Thu hút khách hàng B2B",
-    platform: "LinkedIn",
-    status: "active",
-    budget: 4000,
-    spent: 1800,
-    impressions: 45000,
-    clicks: 1350,
-    conversions: 78,
-    startDate: "2025-06-01",
-    endDate: "2025-08-31",
-    ctr: 3.0,
-    cpc: 1.33,
-    roas: 5.2,
-  },
-  {
-    id: "5",
     name: "Tương tác với thế hệ Z",
     platform: "TikTok",
     status: "paused",
@@ -110,12 +94,12 @@ const demoCampaigns: Campaign[] = [
 ];
 
 const platformData = {
-  labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
+  labels: ["Facebook", "YouTube", "Zalo", "TikTok"],
   datasets: [
     {
       label: "Phân bổ ngân sách",
-      data: [5000, 3000, 2000, 4000, 1500],
-      backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
+      data: [5000, 3000, 2000, 1500],
+      backgroundColor: ["#1877f2", "#FF0000", "#0068FF", "#000000"],
     },
   ],
 };

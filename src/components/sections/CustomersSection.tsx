@@ -20,7 +20,7 @@ type Customer = {
   lastActive: string;
   totalSpent: number;
   orders: number;
-  platform: "Facebook" | "Instagram" | "Twitter" | "LinkedIn" | "TikTok" | "Website" | "Email";
+  platform: "Facebook" | "TikTok" | "YouTube" | "Zalo" | "Website" | "Email";
   segment: "VIP" | "Regular" | "New" | "At Risk";
   satisfaction: number; // 1-5
   interactions: {
@@ -45,7 +45,7 @@ const demoCustomers: Customer[] = [
     lastActive: "2025-06-11T08:30:00Z",
     totalSpent: 2850,
     orders: 12,
-    platform: "Instagram",
+    platform: "YouTube",
     segment: "VIP",
     satisfaction: 5,
     interactions: { likes: 45, comments: 12, shares: 8, messages: 3 },
@@ -63,7 +63,7 @@ const demoCustomers: Customer[] = [
     lastActive: "2025-06-10T16:45:00Z",
     totalSpent: 5200,
     orders: 8,
-    platform: "LinkedIn",
+    platform: "YouTube",
     segment: "VIP",
     satisfaction: 4,
     interactions: { likes: 23, comments: 18, shares: 15, messages: 7 },
@@ -117,7 +117,7 @@ const demoCustomers: Customer[] = [
     lastActive: "2025-06-11T09:00:00Z",
     totalSpent: 890,
     orders: 6,
-    platform: "Twitter",
+    platform: "Zalo",
     segment: "Regular",
     satisfaction: 4,
     interactions: { likes: 28, comments: 9, shares: 12, messages: 4 },
@@ -161,16 +161,15 @@ const segmentData = {
 };
 
 const platformData = {
-  labels: ["Instagram", "LinkedIn", "TikTok", "Facebook", "Twitter", "Website"],
+  labels: ["YouTube", "Zalo", "TikTok", "Facebook", "Website"],
   datasets: [
     {
       label: "Khách hàng theo nền tảng",
       data: [
-        demoCustomers.filter(c => c.platform === "Instagram").length,
-        demoCustomers.filter(c => c.platform === "LinkedIn").length,
+        demoCustomers.filter(c => c.platform === "YouTube").length,
+        demoCustomers.filter(c => c.platform === "Zalo").length,
         demoCustomers.filter(c => c.platform === "TikTok").length,
         demoCustomers.filter(c => c.platform === "Facebook").length,
-        demoCustomers.filter(c => c.platform === "Twitter").length,
         demoCustomers.filter(c => c.platform === "Website").length,
       ],
       backgroundColor: "#6366f1",

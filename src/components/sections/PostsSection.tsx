@@ -9,7 +9,7 @@ import { PublishPost } from "../PublishPost";
 type Post = {
   id: string;
   content: string;
-  platforms: ("Facebook" | "Instagram" | "Twitter" | "LinkedIn" | "TikTok" | "YouTube")[];
+  platforms: ("Facebook" | "TikTok" | "YouTube" | "Zalo")[];
   scheduledAt: string;
   status: "scheduled" | "posted" | "failed" | "draft";
   mediaType: "text" | "image" | "video" | "carousel";
@@ -27,7 +27,7 @@ const demoPosts: Post[] = [
   {
     id: "1",
     content: "🚀 Tin vui! Bộ sưu tập mùa hè mới của chúng tôi sẽ ra mắt vào tuần tới. Hãy sẵn sàng cho những màu sắc rực rỡ và chất liệu bền vững sẽ làm mới tủ đồ của bạn! #ThoitrangMuahe #Benvung #Bousuutapmoi",
-    platforms: ["Instagram", "Facebook", "Twitter"],
+    platforms: ["Facebook"],
     scheduledAt: "2025-06-12T10:00:00Z",
     status: "scheduled",
     mediaType: "carousel",
@@ -37,7 +37,7 @@ const demoPosts: Post[] = [
   {
     id: "2",
     content: "🎉 Tin tức cột mốc! Chúng tôi vừa đạt 10.000 người theo dõi tuyệt vời! Cảm ơn bạn đã đồng hành cùng chúng tôi trên hành trình đáng kinh ngạc này. Cùng hướng tới 10K tiếp theo nào! 💪 #Cotmoc #CamOn #Congdong",
-    platforms: ["Instagram", "Facebook", "LinkedIn"],
+    platforms: ["Facebook"],
     scheduledAt: "2025-06-10T14:00:00Z",
     status: "posted",
     mediaType: "image",
@@ -53,7 +53,7 @@ const demoPosts: Post[] = [
   {
     id: "3",
     content: "⚠️ Thông báo bảo trì: Máy chủ của chúng tôi sẽ tiến hành bảo trì định kỳ vào đêm nay từ 23:00 đến 03:00 sáng. Xin lỗi vì sự bất tiện này. #Baotri #Capnhatmaychu",
-    platforms: ["Twitter", "LinkedIn"],
+    platforms: ["Facebook"],
     scheduledAt: "2025-06-09T22:00:00Z",
     status: "failed",
     mediaType: "text",
@@ -62,7 +62,7 @@ const demoPosts: Post[] = [
   {
     id: "4",
     content: "💡 Hậu trường: Bạn đã bao giờ tự hỏi chúng tôi tạo ra sản phẩm như thế nào chưa? Hãy cùng ghé thăm studio thiết kế của chúng tôi, nơi sự đổi mới gặp gỡ tính sáng tạo! #Hautruong #Thietke #Sangsang",
-    platforms: ["TikTok", "Instagram"],
+    platforms: ["TikTok"],
     scheduledAt: "2025-06-13T16:00:00Z",
     status: "scheduled",
     mediaType: "video",
@@ -72,7 +72,7 @@ const demoPosts: Post[] = [
   {
     id: "5",
     content: "📊 Góc nhìn chuyên môn: Tương lai của tiếp thị mạng xã hội nằm ở những câu chuyện chân thực và xây dựng cộng đồng gắn kết. Ý kiến của bạn thế nào? #Meotiepthi #Chuyennganh #Mangxahoi",
-    platforms: ["LinkedIn"],
+    platforms: ["YouTube"],
     scheduledAt: "2025-06-11T09:00:00Z",
     status: "posted",
     mediaType: "text",
@@ -88,7 +88,7 @@ const demoPosts: Post[] = [
   {
     id: "6",
     content: "🌟 Góc khách hàng: Gặp gỡ Sarah, người đã thay đổi phong cách của mình với các sản phẩm của chúng tôi! Hãy chia sẻ câu câu chuyện thay đổi của bạn trong phần bình luận nhé. #Khachhang #Thaydoi #Phongcach",
-    platforms: ["Instagram", "Facebook"],
+    platforms: ["Facebook", "Zalo"],
     scheduledAt: "2025-06-14T12:00:00Z",
     status: "draft",
     mediaType: "image",
@@ -97,7 +97,7 @@ const demoPosts: Post[] = [
   {
     id: "7",
     content: "🎥 Video hướng dẫn sử dụng sản phẩm mới của chúng tôi! Xem ngay để biết thêm chi tiết về các tính năng vượt trội. #Huongdan #Youtube #Video",
-    platforms: ["YouTube"],
+    platforms: ["YouTube", "Zalo"],
     scheduledAt: "2025-06-15T08:00:00Z",
     status: "posted",
     mediaType: "video",
@@ -135,11 +135,9 @@ export function PostsSection() {
   const getPlatformColor = (platform: string) => {
     const colors: Record<string, string> = {
       Facebook: "#1877f2",
-      Instagram: "#e4405f",
-      Twitter: "#1da1f2",
-      LinkedIn: "#0077b5",
       TikTok: "#000000",
       YouTube: "#FF0000",
+      Zalo: "#0068FF",
     };
     return colors[platform] || "#6366f1";
   };

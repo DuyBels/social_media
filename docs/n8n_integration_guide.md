@@ -194,3 +194,180 @@ export function UsersSection() {
    ```
    Sau đó, trên Next.js chỉ cần gọi endpoint dạng `/api/users` thay vì địa chỉ tuyệt đối của n8n.
 3. **Mã lỗi HTTP**: Hãy thiết lập node **Respond to Webhook** trả về mã HTTP thích hợp (ví dụ: `200 OK`, `201 Created` cho thêm mới, `400 Bad Request` cho lỗi đầu vào, hoặc `401 Unauthorized` cho sai thông tin đăng nhập).
+
+---
+
+## 5. Tích hợp TikTok & YouTube (Đăng song song 2 nền tảng)
+
+Khi bạn nhấn nút "Đăng bài" từ Dashboard, dữ liệu gửi lên Webhook n8n (`POST /posts`) giờ đây sẽ bao gồm:
+- **`content`**: Nội dung caption của bài viết.
+- **`video`**: Tệp video nhị phân (binary).
+- **`platforms`**: Chuỗi JSON chứa mảng các nền tảng muốn đăng (ví dụ: `["YouTube", "TikTok"]`).
+
+Hãy cấu hình workflow n8n theo các bước sau để đăng bài tự động:
+
+### Bước 5.1: Parse và xử lý Payload từ Webhook
+Thêm một node **Code** (Javascript) ngay sau Webhook để giải mã danh sách nền tảng:
+```javascript
+const body = $input.item.json.body;
+let platforms = [];
+
+try {
+  platforms = JSON.parse(body.platforms || '[]');
+} catch (e) {
+  // Dự phòng nếu đã là mảng hoặc định dạng khác
+  platforms = typeof body.platforms === 'string' ? [body.platforms] : (body.platforms || []);
+}
+
+return {
+  json: {
+    content: body.content,
+    platforms: platforms
+  }
+};
+```
+
+### Bước 5.2: Phân nhánh bằng Node Switch
+1. Thêm một node **Switch** vào quy trình.
+2. Cấu hình:
+   - **Value 1**: `{{ $json.platforms }}`
+   - **Type**: `String`
+   - **Rules**:
+     - Rule 1: Nếu chứa `YouTube` $\rightarrow$ Đi tới luồng YouTube (Node bạn đã cấu hình thành công).
+     - Rule 2: Nếu chứa `TikTok` $\rightarrow$ Đi tới luồng TikTok.
+     - Rule 3: Nếu chứa `Zalo` $\rightarrow$ Đi tới luồng Zalo.
+
+---
+
+### Bước 5.3: Hướng dẫn tích hợp TikTok API
+
+Có 2 phương pháp chính để đăng video lên TikTok thông qua n8n:
+
+#### 💡 Phương án A: Tích hợp qua Dịch vụ bên thứ ba (Được khuyến nghị cho dự án thử nghiệm)
+Nếu bạn chưa có tài khoản Doanh nghiệp được kiểm duyệt (Audit) bởi TikTok, hãy sử dụng các nền tảng trung gian như **Ayrshare** hoặc **Buffer** để đơn giản hóa OAuth2 và đẩy thẳng bài viết:
+1. Đăng ký tài khoản trên **Ayrshare** (có gói miễn phí) và kết nối tài khoản TikTok của bạn tại đó.
+2. Trên n8n, kéo một node **HTTP Request**:
+   - **Method**: `POST`
+   - **URL**: `https://api.ayrshare.com/api/post`
+   - **Headers**:
+     - `Authorization`: `Bearer YOUR_AYRSHARE_API_KEY`
+     - `Content-Type`: `application/json`
+   - **Body (JSON)**:
+     ```json
+     {
+       "post": "{{ $json.content }}",
+       "platforms": ["tiktok"],
+       "mediaUrls": ["{{ $binary.video.uploadUrl || 'URL_VIDEO_PUBLIC_NEU_CO' }}"]
+     }
+     ```
+
+#### 🛡️ Phương án B: Tích hợp API TikTok Direct Post chính thức (Yêu cầu Audit)
+Để sử dụng API trực tiếp từ TikTok Developer Portal:
+1. Đăng ký tài khoản Developer trên [TikTok for Developers](https://developers.tiktok.com/).
+2. Tạo App, kích hoạt Scope `video.publish` và thực hiện cấu hình OAuth2 trên n8n để lấy `Access Token`.
+3. Trong n8n, thực hiện chuỗi 3 bước gọi API:
+
+##### **Bước B.1: Khởi tạo tải lên (Init Upload)**
+Thêm node **HTTP Request**:
+- **Method**: `POST`
+- **URL**: `https://open.tiktokapis.com/v2/post/publish/video/init/`
+- **Headers**:
+  - `Authorization`: `Bearer TIKTOK_ACCESS_TOKEN`
+  - `Content-Type`: `application/json; charset=UTF-8`
+- **Body (JSON)**:
+  ```json
+  {
+    "post_info": {
+      "title": "{{ $json.content }}",
+      "privacy_level": "PUBLIC_TO_EVERYONE",
+      "video_cover_timestamp_ms": 0
+    },
+    "source_info": {
+      "source": "FILE_UPLOAD",
+      "video_size": {{ $binary.video.fileSize }} 
+    }
+  }
+  ```
+- Kết quả nhận về sẽ có chứa `upload_url` và `publish_id`.
+
+##### **Bước B.2: Đẩy file Video nhị phân (Upload Video)**
+Thêm node **HTTP Request** tiếp theo:
+- **Method**: `PUT`
+- **URL**: `{{ $json.data.upload_url }}` (Lấy từ bước B.1)
+- **Headers**:
+  - `Content-Type`: `video/mp4`
+  - `Content-Length`: `{{ $binary.video.fileSize }}`
+- **Body**: Chọn gửi kiểu **Binary** và truyền thuộc tính `video` nhận được từ Webhook ban đầu.
+
+##### **Bước B.3: Kiểm tra trạng thái xuất bản**
+TikTok sẽ xử lý video không đồng bộ. Bạn có thể sử dụng endpoint để kiểm tra:
+- **Method**: `POST`
+- **URL**: `https://open.tiktokapis.com/v2/post/publish/status/`
+- **Body**:
+  ```json
+  {
+    "publish_id": "{{ $json.data.publish_id }}"
+  }
+  ```
+
+---
+
+### Bước 5.4: Hướng dẫn tích hợp Zalo Official Account (OA) API
+
+Để xuất bản bài viết dạng video lên trang Zalo OA của doanh nghiệp thông qua n8n, bạn cần thực hiện các bước sau:
+
+#### 🛡️ Chuẩn bị trên Zalo Developer Portal
+1. Truy cập [Zalo for Developers](https://developers.zalo.me/) và đăng ký tài khoản.
+2. Tạo một ứng dụng (App) liên kết với Zalo Official Account (OA) của bạn.
+3. Trong phần cấu hình quyền ứng dụng (Permissions), kích hoạt quyền **quản lý bài viết** (ghi nội dung).
+4. Thiết lập OAuth2 trên n8n (hoặc tạo cơ chế tự động lấy `access_token` mới từ `refresh_token` mỗi khi gọi API, vì access_token của Zalo có thời hạn ngắn là 25 tiếng).
+
+#### 🔗 Quy trình gọi API trên n8n
+Do API của Zalo yêu cầu tải video lên trước rồi mới tạo bài viết dựa trên ID của video đó, quy trình trên n8n sẽ bao gồm 3 bước HTTP Request kế tiếp:
+
+##### **Bước C.1: Tải video lên hệ thống Zalo (Upload Video)**
+Thêm node **HTTP Request**:
+- **Method**: `POST`
+- **URL**: `https://openapi.zalo.me/v2.0/article/upload_video/preparevideo`
+- **Headers**:
+  - `access_token`: `YOUR_ZALO_ACCESS_TOKEN`
+- **Send Binary Data**: Bật tùy chọn gửi nhị phân (Binary).
+- **Body Content Type**: `form-data` (Multipart)
+- **Parameters**:
+  - **Key**: `file`, **Value**: Truyền file video nhị phân nhận được từ Webhook (`video`).
+- **Lưu ý**: Dung lượng tối đa là 50MB, định dạng `.mp4` hoặc `.avi`.
+- Kết quả trả về chứa một `token` dùng để kiểm tra tiến trình xử lý video.
+
+##### **Bước C.2: Xác thực và lấy Video ID (Verify Video)**
+Vì Zalo cần thời gian xử lý/convert video đã tải lên, bạn cần gọi API xác thực trạng thái cho đến khi nhận được `video_id` thực tế:
+- **Method**: `GET`
+- **URL**: `https://openapi.zalo.me/v2.0/article/upload_video/verify`
+- **Headers**:
+  - `access_token`: `YOUR_ZALO_ACCESS_TOKEN`
+- **Query Parameters**:
+  - `token`: `{{ $json.token }}` (Nhận từ Bước C.1)
+- *Mẹo nhỏ trên n8n*: Nếu video dung lượng lớn, bạn có thể thêm node **Wait** (chờ 5-10 giây) hoặc sử dụng tính năng Loop trên n8n để gọi lại kiểm tra cho đến khi trạng thái trả về là thành công và có `video_id`.
+
+##### **Bước C.3: Tạo bài viết Video trên Zalo OA**
+Sau khi có `video_id` từ Bước C.2, gửi yêu cầu HTTP tạo bài viết công khai trên Nhật ký của OA:
+- **Method**: `POST`
+- **URL**: `https://openapi.zalo.me/v2.0/article/create`
+- **Headers**:
+  - `access_token`: `YOUR_ZALO_ACCESS_TOKEN`
+  - `Content-Type`: `application/json`
+- **Body (JSON)**:
+  ```json
+  {
+    "type": "video",
+    "title": "Tiêu đề bài đăng video mới",
+    "author": "Dashboard Admin",
+    "video_id": "{{ $json.video_id }}",
+    "description": "{{ $json.content }}", 
+    "cover": {
+      "cover_type": "photo",
+      "photo_url": "URL_ANH_BIA_VIDEO_NEU_CO"
+    },
+    "status": "show"
+  }
+  ```
+  *(Trường `description` sẽ chứa nội dung bài đăng truyền từ ô "Nội dung bài viết" của Dashboard)*

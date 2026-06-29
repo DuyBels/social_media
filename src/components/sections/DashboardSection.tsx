@@ -8,12 +8,12 @@ import { TrendingUp, Users, Eye, MessageCircle, Heart, DollarSign, Target } from
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Legend);
 
 const platformPostsData = {
-  labels: ["Facebook", "Instagram", "Twitter", "LinkedIn", "TikTok"],
+  labels: ["YouTube", "Zalo", "TikTok", "Facebook"],
   datasets: [
     {
       label: "Bài viết tuần này",
-      data: [15, 22, 18, 8, 12],
-      backgroundColor: ["#1877f2", "#e4405f", "#1da1f2", "#0077b5", "#000000"],
+      data: [25, 8, 12, 15],
+      backgroundColor: ["#FF0000", "#0068FF", "#000000", "#1877f2"],
     },
   ],
 };
@@ -52,11 +52,10 @@ const weeklyTrendsData = {
 };
 
 const platformMetrics = [
-  { platform: "Facebook", followers: "45.2K", engagement: "3.8%", reach: "120K", color: "#1877f2" },
-  { platform: "Instagram", followers: "67.8K", engagement: "5.2%", reach: "89K", color: "#e4405f" },
-  { platform: "Twitter", followers: "23.1K", engagement: "2.9%", reach: "67K", color: "#1da1f2" },
-  { platform: "LinkedIn", followers: "12.4K", engagement: "4.1%", reach: "34K", color: "#0077b5" },
-  { platform: "TikTok", followers: "156.7K", engagement: "8.7%", reach: "234K", color: "#000000" },
+  { platform: "YouTube", status: "Đã đăng nhập", followers: "12.5K subscribers", engagement: "4.8%", reach: "150K views", color: "#FF0000" },
+  { platform: "Zalo", status: "Đang tích hợp", followers: "3.2K quan tâm", engagement: "3.5%", reach: "12K", color: "#0068FF" },
+  { platform: "TikTok", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#000000" },
+  { platform: "Facebook", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#1877f2" },
 ];
 
 export function DashboardSection() {
@@ -176,15 +175,26 @@ export function DashboardSection() {
           <CardTitle>Tổng quan hiệu suất nền tảng</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {platformMetrics.map((platform) => (
               <div key={platform.platform} className="p-4 border rounded-lg space-y-3">
-                <div className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: platform.color }}
-                  />
-                  <span className="font-semibold">{platform.platform}</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: platform.color }}
+                    />
+                    <span className="font-semibold">{platform.platform}</span>
+                  </div>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                    platform.status === "Đã đăng nhập" 
+                      ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
+                      : platform.status === "Đang tích hợp"
+                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                      : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
+                  }`}>
+                    {platform.status}
+                  </span>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
@@ -215,10 +225,10 @@ export function DashboardSection() {
           <CardContent>
             <div className="space-y-4">
               {[
-                { platform: "Instagram", content: "Ra mắt bộ sưu tập mùa hè 🌞", engagement: "2.3K", color: "#e4405f" },
-                { platform: "TikTok", content: "Video hậu trường", engagement: "5.7K", color: "#000000" },
-                { platform: "Facebook", content: "Đánh giá từ khách hàng nổi bật", engagement: "1.8K", color: "#1877f2" },
-                { platform: "LinkedIn", content: "Bài viết chia sẻ chuyên môn", engagement: "892", color: "#0077b5" },
+                { platform: "TikTok", content: "Video hậu trường thiết kế 💡", engagement: "5.7K", color: "#000000" },
+                { platform: "YouTube", content: "Video hướng dẫn sử dụng sản phẩm mới 🎥", engagement: "4.2K", color: "#FF0000" },
+                { platform: "Facebook", content: "Chương trình khuyến mãi hè 2026 🌞", engagement: "1.8K", color: "#1877f2" },
+                { platform: "Zalo", content: "Thông báo chương trình tri ân khách hàng 💝", engagement: "892", color: "#0068FF" },
               ].map((post, index) => (
                 <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
