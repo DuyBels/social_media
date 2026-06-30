@@ -371,3 +371,179 @@ Sau khi có `video_id` từ Bước C.2, gửi yêu cầu HTTP tạo bài viết
   }
   ```
   *(Trường `description` sẽ chứa nội dung bài đăng truyền từ ô "Nội dung bài viết" của Dashboard)*
+
+---
+
+## 6. Thiết lập Workflow Nhận thông báo từ YouTube (YouTube Notification Workflow)
+
+Để đồng bộ các thông báo mới từ YouTube về hệ thống Dashboard (hiển thị tại mục **Tương tác gần đây** và **Thanh thông báo**), chúng ta cần thiết lập một hệ thống kết hợp giữa **WebSub (Real-time Video Publish)** và **YouTube API Polling (Comments & Subscriptions)**.
+
+```mermaid
+graph TD
+    A[YouTube Platform] -->|Video Mới Đăng - WebSub| B(n8n Webhook Node)
+    A -->|Bình luận/Lượt đăng ký mới| C(n8n Cron Trigger)
+    C -->|Gọi API| D(YouTube Data API Node)
+    B -->|Bắt tay GET/Giải mã POST XML| E[n8n JS Code Node]
+    D -->|Lọc bình luận mới| F[n8n Filter/Comparison Node]
+    E -->|Lưu cơ sở dữ liệu| G[(Database - Supabase/Airtable)]
+    F -->|Lưu tương tác| G
+    G -->|API GET /notifications & /engagements| H[Next.js Dashboard]
+```
+
+### Bước 6.1: Nhận thông báo Video mới xuất bản qua WebSub (Real-time)
+
+YouTube sử dụng giao thức WebSub (PubSubHubbub) để gửi thông báo đẩy (push notifications) mỗi khi kênh của bạn có video mới. 
+
+#### 1. Đăng ký nhận thông báo với Hub của Google
+Gửi một yêu cầu POST đến Hub của Google (`https://pubsubhubbub.appspot.com/subscribe`) với các tham số:
+* `hub.callback`: Địa chỉ URL Webhook n8n của bạn (ví dụ: `https://n8n.yourdomain.com/webhook/youtube-notifications`).
+* `hub.topic`: `https://www.youtube.com/xml/feeds/videos.xml?channel_id=YOUR_YOUTUBE_CHANNEL_ID`.
+* `hub.mode`: `subscribe`.
+* `hub.verify`: `async`.
+
+#### 2. Cấu hình Node Webhook trên n8n
+Node **Webhook** này cần xử lý cả hai hành động: xác thực đăng ký (GET) và tiếp nhận thông báo (POST).
+* **Path**: `youtube-notifications`
+* **Method**: `GET, POST` (hoặc tạo hai node Webhook có cùng path nhưng khác Method).
+* **Respond With**: `Using Respond to Webhook Node` (hoặc `Automatic` cho POST).
+
+#### 3. Xử lý logic bắt tay và phân tích dữ liệu (Node Code JS)
+Kéo node **Code** (Javascript) vào sau Webhook:
+
+```javascript
+const method = $input.item.json.headers['x-forwarded-method'] || $input.item.json.query?.['hub.mode'] ? 'GET' : 'POST';
+
+// Trường hợp 1: Xác thực đăng ký (GET Request từ Google Hub)
+if ($input.item.json.query && $input.item.json.query['hub.challenge']) {
+  return {
+    json: {
+      headers: {
+        "content-type": "text/plain"
+      },
+      statusCode: 200,
+      body: $input.item.json.query['hub.challenge']
+    }
+  };
+}
+
+// Trường hợp 2: Nhận thông báo Video mới (POST XML Payload)
+// Lưu ý: n8n cần bật tính năng tự động parse XML hoặc dùng node XML để chuyển đổi
+const body = $input.item.json.body;
+if (body && body.feed && body.feed.entry) {
+  const entry = body.feed.entry;
+  const videoId = entry['yt:videoId'] || '';
+  const channelId = entry['yt:channelId'] || '';
+  const title = entry.title || 'Video mới';
+  const videoUrl = entry.link?.$?.href || `https://www.youtube.com/watch?v=${videoId}`;
+  
+  return {
+    json: {
+      isNotification: true,
+      type: "youtube_video",
+      title: "Video mới đã xuất bản!",
+      message: `Video "${title}" vừa được đăng tải công khai trên kênh YouTube.`,
+      videoId: videoId,
+      channelId: channelId,
+      url: videoUrl,
+      time: new Date().toISOString()
+    }
+  };
+}
+
+return { json: { status: "ignored" } };
+```
+
+#### 4. Trả về phản hồi cho Google Hub (Respond to Webhook)
+* Nếu là yêu cầu GET xác thực: Kết nối đầu ra của Node Code ở trên vào node **Respond to Webhook**, cấu hình trả về **Response Body** là `{{ $json.body }}` với Content-Type `text/plain`.
+* Nếu là yêu cầu POST chứa dữ liệu video: Lưu thông tin vào Database rồi trả về mã `204 No Content` hoặc `200 OK`.
+
+---
+
+### Bước 6.2: Quét bình luận và tương tác mới bằng Polling (Scheduled)
+
+Do WebSub chỉ hỗ trợ thông báo khi đăng video mới, các bình luận (Comments) và lượt đăng ký mới (Subscribers) cần được quét định kỳ thông qua YouTube API.
+
+#### 1. Thiết lập Node Schedule Trigger
+* Cấu hình thời gian chạy tự động: **Mỗi 10 phút hoặc 15 phút** (`*/10 * * * *`).
+
+#### 2. Kéo Node YouTube (hoặc HTTP Request)
+* **Resource**: `Comment Thread`
+* **Operation**: `Get Many` (Danh sách bình luận)
+* **Parameters**:
+  - `All for Channel`: Bật tùy chọn này để lấy bình luận trên toàn bộ kênh.
+  - `Channel ID`: `YOUR_YOUTUBE_CHANNEL_ID`.
+  - `Limit`: `20` (Đủ để lấy các bình luận mới phát sinh trong 10 phút qua).
+  - `Authentication`: Sử dụng Credentials `YouTube OAuth2`.
+
+#### 3. Node Filter & Comparison (Lọc bình luận mới)
+Để tránh thông báo lặp lại các bình luận cũ đã xử lý:
+1. Đọc danh sách bình luận đã lưu trong cơ sở dữ liệu (`GET engagements` hoặc `SELECT id FROM comments`).
+2. Sử dụng node **Compare** hoặc node **Code JS** để lọc ra những bình luận có `commentId` chưa tồn tại trong database.
+
+#### 4. Ghi nhận dữ liệu và đẩy thông báo
+Với mỗi bình luận mới lọc được:
+* **Lưu vào bảng Engagements**:
+  ```json
+  {
+    "type": "Comment",
+    "user": "{{ $json.snippet.topLevelComment.snippet.authorDisplayName }}",
+    "platform": "YouTube",
+    "post": "{{ $json.snippet.topLevelComment.snippet.textDisplay }}",
+    "time": "{{ $json.snippet.topLevelComment.snippet.publishedAt }}"
+  }
+  ```
+* **Lưu vào bảng Notifications**:
+  ```json
+  {
+    "type": "youtube_comment",
+    "title": "Bình luận mới trên YouTube",
+    "message": "Người dùng {{ $json.snippet.topLevelComment.snippet.authorDisplayName }} đã bình luận: \"{{ $json.snippet.topLevelComment.snippet.textDisplay }}\"",
+    "isRead": false,
+    "createdAt": "{{ new Date().toISOString() }}"
+  }
+  ```
+
+---
+
+### Bước 6.3: Tích hợp API Endpoint trên n8n cho Frontend
+
+Giao diện Next.js gọi hai endpoint Webhook sau của n8n để lấy danh sách tương tác và thông báo:
+
+#### 1. Endpoint `/engagements` (GET)
+* **Node Webhook**: Lắng nghe yêu cầu `GET /engagements`.
+* **Node Database**: Truy vấn bảng `engagements` (sắp xếp theo thời gian mới nhất).
+* **Node Respond to Webhook**: Trả về dữ liệu chuẩn JSON:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": 1,
+        "type": "Comment",
+        "user": "Nguyễn Văn A",
+        "platform": "YouTube",
+        "post": "Video hướng dẫn sử dụng sản phẩm mới 🎥",
+        "time": "2026-06-30T04:20:00.000Z"
+      }
+      // ... các tương tác khác
+    ]
+  }
+  ```
+
+#### 2. Endpoint `/notifications` (GET)
+* **Node Webhook**: Lắng nghe yêu cầu `GET /notifications`.
+* **Node Database**: Truy vấn bảng `notifications` (lọc các thông báo chưa đọc hoặc giới hạn 10 tin mới nhất).
+* **Node Respond to Webhook**: Trả về dữ liệu chuẩn JSON:
+  ```json
+  {
+    "success": true,
+    "data": [
+      {
+        "id": "notif_123",
+        "message": "🔔 Có bình luận mới từ Nguyễn Văn A trên video YouTube: \"Tuyệt vời quá!\"",
+        "type": "youtube_comment",
+        "time": "5 phút trước"
+      }
+    ]
+  }
+  ```

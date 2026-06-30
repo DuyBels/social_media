@@ -52,7 +52,7 @@ const weeklyTrendsData = {
 };
 
 const platformMetrics = [
-  { platform: "YouTube", status: "Đã đăng nhập", followers: "12.5K subscribers", engagement: "4.8%", reach: "150K views", color: "#FF0000" },
+  { platform: "YouTube", status: "Đã đăng nhập", followers: "2 subscribers", engagement: "50.0%", reach: "24 views", color: "#FF0000" },
   { platform: "Zalo", status: "Đang tích hợp", followers: "3.2K quan tâm", engagement: "3.5%", reach: "12K", color: "#0068FF" },
   { platform: "TikTok", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#000000" },
   { platform: "Facebook", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#1877f2" },

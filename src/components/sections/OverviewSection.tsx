@@ -87,7 +87,7 @@ export function OverviewSection() {
   // Animation effect for stats
   useEffect(() => {
     const animateNumbers = () => {
-      const targets = { followers: 278534, reach: 5192879, engagement: 98.2 };
+      const targets = { followers: 2, reach: 24, engagement: 50.0 };
       const duration = 2000;
       const steps = 60;
       const increment = duration / steps;
@@ -423,7 +423,7 @@ export function OverviewSection() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@MyYouTubeChannel</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">12.5K người đăng ký • Đã đăng nhập</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">2 người đăng ký • Đã đăng nhập</p>
                   </div>
                 </div>
                 <Badge className="bg-green-600 text-white hover:bg-green-700 text-xs">Chính</Badge>

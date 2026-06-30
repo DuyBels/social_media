@@ -1,0 +1,263 @@
+{
+  "name": "YouTube Notifications and Engagements Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "youtube-new-video",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "2d689623-fbde-4340-8abf-4c9f1a076778",
+      "name": "Webhook (WebSub)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        280,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "value": 15
+            }
+          ]
+        }
+      },
+      "id": "e9366dfc-2792-4112-a720-bd89e2cf442a",
+      "name": "Schedule Trigger (Comments & Subs)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        280,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "commentThread",
+        "operation": "getMany",
+        "channelId": "YOUR_YOUTUBE_CHANNEL_ID",
+        "limit": 20,
+        "options": {}
+      },
+      "id": "c1f77d54-a957-41ab-bc93-a44cc21ba660",
+      "name": "YouTube API (Comments)",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        500,
+        340
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "your-oauth2-credential-id",
+          "name": "YouTube OAuth2 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "operation": "get",
+        "channelId": "YOUR_YOUTUBE_CHANNEL_ID",
+        "fields": [
+          "statistics"
+        ],
+        "options": {}
+      },
+      "id": "b1b06825-901d-4076-afab-d2f1f516a2ef",
+      "name": "YouTube API (Channel Stats)",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        500,
+        480
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "your-oauth2-credential-id",
+          "name": "YouTube OAuth2 account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const method = $input.item.json.headers['x-forwarded-method'] || $input.item.json.query?.['hub.mode'] ? 'GET' : 'POST';\n\n// 1. Xác thực đăng ký WebSub (GET request)\nif ($input.item.json.query && $input.item.json.query['hub.challenge']) {\n  return {\n    json: {\n      headers: {\n        \"content-type\": \"text/plain\"\n      },\n      statusCode: 200,\n      body: $input.item.json.query['hub.challenge']\n    }\n  };\n}\n\n// 2. Nhận thông báo Video mới (POST XML Payload)\nconst body = $input.item.json.body;\nif (body && body.feed && body.feed.entry) {\n  const entry = body.feed.entry;\n  const videoId = entry['yt:videoId'] || '';\n  const title = entry.title || 'Video mới';\n  const videoUrl = entry.link?.$?.href || `https://www.youtube.com/watch?v=${videoId}`;\n  \n  return {\n    json: {\n      type: \"Video\",\n      user: \"Hệ thống YouTube\",\n      platform: \"YouTube\",\n      post: `Đã xuất bản video mới: \"${title}\"`,\n      url: videoUrl,\n      time: new Date().toISOString(),\n      isNewVideo: true\n    }\n  };\n}\n\nreturn { json: { status: \"ignored\" } };"
+      },
+      "id": "a9a3b8cd-d218-4903-b9ee-341e17d123d4",
+      "name": "Process WebSub Video Upload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        180
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const comments = $input.all();\nconst output = [];\n\nfor (const item of comments) {\n  const snippet = item.json.snippet?.topLevelComment?.snippet;\n  if (snippet) {\n    output.push({\n      json: {\n        type: \"Comment\",\n        user: snippet.authorDisplayName,\n        platform: \"YouTube\",\n        post: snippet.textDisplay,\n        time: snippet.publishedAt || new Date().toISOString()\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "id": "e2a2f862-23c2-482a-a920-5c6218d6e326",
+      "name": "Process Comments",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const stats = $input.item.json.statistics;\nconst subCount = parseInt(stats?.subscriberCount || \"0\", 10);\n\n// Trả về thông báo nếu đạt mốc phần thưởng\nreturn {\n  json: {\n    type: \"Subscribe\",\n    user: \"Hệ thống YouTube\",\n    platform: \"YouTube\",\n    post: `Kênh đạt mốc ${subCount.toLocaleString()} người đăng ký! 🎉`,\n    time: new Date().toISOString()\n  }\n};"
+      },
+      "id": "89025178-0cf2-47cc-ae90-c17290f6b5b5",
+      "name": "Process Channel Stats",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/v1/engagements",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "type",
+              "value": "={{ $json.type }}"
+            },
+            {
+              "name": "user",
+              "value": "={{ $json.user }}"
+            },
+            {
+              "name": "platform",
+              "value": "={{ $json.platform }}"
+            },
+            {
+              "name": "post",
+              "value": "={{ $json.post }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.time }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f516a2ef-901d-4076-afab-d1f1f516a2ff",
+      "name": "Save to Database / Send Alert",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        980,
+        340
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (WebSub)": {
+      "main": [
+        [
+          {
+            "node": "Process WebSub Video Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger (Comments & Subs)": {
+      "main": [
+        [
+          {
+            "node": "YouTube API (Comments)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "YouTube API (Channel Stats)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube API (Comments)": {
+      "main": [
+        [
+          {
+            "node": "Process Comments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YouTube API (Channel Stats)": {
+      "main": [
+        [
+          {
+            "node": "Process Channel Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process WebSub Video Upload": {
+      "main": [
+        [
+          {
+            "node": "Save to Database / Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Comments": {
+      "main": [
+        [
+          {
+            "node": "Save to Database / Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Channel Stats": {
+      "main": [
+        [
+          {
+            "node": "Save to Database / Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {},
+  "id": "youtube-notifications-workflow"
+}
