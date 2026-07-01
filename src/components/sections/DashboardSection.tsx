@@ -40,15 +40,22 @@ export function DashboardSection() {
           (e) => e.platform === "YouTube" && e.type === "Subscribe"
         );
         let followers = 2; // default
-        let reach = 6; // default
         if (youtubeSubsItem) {
-          const match = youtubeSubsItem.post.match(/Kênh đạt mốc ([\d.,]+) người đăng ký/);
+          const match = youtubeSubsItem.post.match(/(\d+)/);
           if (match) {
-            followers = parseInt(match[1].replace(/[,.]/g, ""), 10);
+            followers = parseInt(match[1], 10);
           }
-          const matchViews = youtubeSubsItem.post.match(/và ([\d.,]+) lượt xem/);
-          if (matchViews) {
-            reach = parseInt(matchViews[1].replace(/[,.]/g, ""), 10);
+        }
+
+        // Find latest YouTube views milestone (separate View event)
+        const youtubeViewsItem = engagements.find(
+          (e) => e.platform === "YouTube" && e.type === "View"
+        );
+        let reach = 6; // default
+        if (youtubeViewsItem) {
+          const match = youtubeViewsItem.post.match(/(\d+)/);
+          if (match) {
+            reach = parseInt(match[1], 10);
           }
         }
 

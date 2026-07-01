@@ -56,6 +56,32 @@ export async function POST(request: Request) {
     const body = await request.json();
     const db = readDb();
     
+    // Deduplicate comments to prevent bloating
+    if (body.type === 'Comment') {
+      const isDuplicate = (db.engagements || []).some(
+        (e) => e.platform === (body.platform || 'YouTube') &&
+               e.type === 'Comment' &&
+               e.user === (body.user || 'Anonymous') &&
+               e.post === (body.post || '')
+      );
+      if (isDuplicate) {
+        return NextResponse.json({ success: true, message: 'Duplicate comment ignored' });
+      }
+    }
+
+    // Keep only the latest milestone of Subscribe/View to prevent history bloat
+    if (body.type === 'Subscribe' || body.type === 'View') {
+      const platform = body.platform || 'YouTube';
+      db.engagements = (db.engagements || []).filter(
+        (e) => !(e.platform === platform && e.type === body.type)
+      );
+      const milestoneNotifType = `${platform.toLowerCase()}_milestone`;
+      const interactionNotifType = `${platform.toLowerCase()}_interaction`;
+      db.notifications = (db.notifications || []).filter(
+        (n) => n.type !== milestoneNotifType && n.type !== interactionNotifType
+      );
+    }
+
     const newEngagement: EngagementItem = {
       id: Date.now() + Math.floor(Math.random() * 1000),
       type: body.type || 'Comment',
