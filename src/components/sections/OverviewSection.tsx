@@ -11,6 +11,15 @@ import { useResponsive } from "@/hooks/useResponsive";
 import { useKeyboardShortcuts } from "@/hooks/useAccessibility";
 import { apiFetch } from "@/lib/apiClient";
 
+interface EngagementItem {
+  id: number;
+  type: string;
+  user: string;
+  platform: string;
+  post: string;
+  time: string;
+}
+
 export function OverviewSection() {
   const { addToast, ToastContainer } = useToast();
   const { isMobile, isTablet } = useResponsive();
@@ -86,8 +95,47 @@ export function OverviewSection() {
 
   // Animation effect for stats
   useEffect(() => {
-    const animateNumbers = () => {
-      const targets = { followers: 2, reach: 24, engagement: 50.0 };
+    const animateNumbers = async () => {
+      let targets = { followers: 2, reach: 24, engagement: 50.0 };
+
+      // Fetch dynamic stats from database
+      const res = await apiFetch<EngagementItem[]>("engagements");
+      if (res.success && res.data) {
+        const engagements = res.data;
+        
+        // Find latest YouTube subscriber milestone
+        const youtubeSubsItem = engagements.find(
+          (e) => e.platform === "YouTube" && e.type === "Subscribe"
+        );
+        let followers = 2; // default
+        let reach = 6; // default
+        if (youtubeSubsItem) {
+          const match = youtubeSubsItem.post.match(/Kênh đạt mốc ([\d.,]+) người đăng ký/);
+          if (match) {
+            followers = parseInt(match[1].replace(/[,.]/g, ""), 10);
+          }
+          const matchViews = youtubeSubsItem.post.match(/và ([\d.,]+) lượt xem/);
+          if (matchViews) {
+            reach = parseInt(matchViews[1].replace(/[,.]/g, ""), 10);
+          }
+        }
+
+        // Count YouTube comments
+        const ytComments = engagements.filter(
+          (e) => e.platform === "YouTube" && e.type === "Comment"
+        );
+        const commentsCount = ytComments.length;
+
+        // Calculate engagement rate
+        const engagement = reach > 0 ? parseFloat(((commentsCount / reach) * 100).toFixed(1)) : 0;
+
+        targets = {
+          followers,
+          reach,
+          engagement: engagement > 0 ? engagement : 50.0
+        };
+      }
+
       const duration = 2000;
       const steps = 60;
       const increment = duration / steps;
@@ -113,14 +161,14 @@ export function OverviewSection() {
     };
 
     animateNumbers();
-  }, []);
+  }, [addToast]);
   // Calendar data for Post Activity with more realistic data - memoized for performance
   const calendarData = useMemo(() => [
-    [0, 1, 1, 2, 0, 3, 1],
-    [2, 0, 1, 3, 3, 2, 0],
-    [1, 3, 0, 2, 1, 2, 2],
-    [0, 1, 2, 3, 1, 1, 2],
-    [2, 1, 3, 1, 2, 0, 1]
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0]
   ], []);
 
   const getActivityColor = useMemo(() => (level: number) => {
@@ -131,16 +179,8 @@ export function OverviewSection() {
       case 3: return "bg-purple-600 dark:bg-purple-500 hover:bg-purple-700 dark:hover:bg-purple-400";
       default: return "bg-gray-100 dark:bg-gray-800";
     }  }, []);
-  const locationData = useMemo(() => [
-    { country: 'Hoa Kỳ', count: 197520, percentage: 100 },
-    { country: 'Brazil', count: 32985, percentage: 65 },
-    { country: 'Thụy Sĩ', count: 10254, percentage: 35 }
-  ], []);
-  const ageData = useMemo(() => [
-    { range: '18-24', count: 89234, percentage: 85 },
-    { range: '25-34', count: 156789, percentage: 100 },
-    { range: '35-44', count: 32511, percentage: 45 }
-  ], []);  // Refresh handler - optimized with useCallback
+  const locationData = useMemo<{ country: string; count: number; percentage: number }[]>(() => [], []);
+  const ageData = useMemo<{ range: string; count: number; percentage: number }[]>(() => [], []);  // Refresh handler - optimized with useCallback
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     addToast({ description: "Đang làm mới dữ liệu...", type: "info" });
@@ -343,22 +383,26 @@ export function OverviewSection() {
                   Độ tuổi
                 </button>
               </div>              <div className="space-y-3">
-                {(activeTab === 'locations' ? locationData : ageData).map((item, index) => (
-                  <div key={index} className="group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 transition-colors">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                        {activeTab === 'locations' ? (item as typeof locationData[0]).country : (item as typeof ageData[0]).range}
-                      </span>
-                      <span className="text-xs sm:text-sm font-medium">{item.count.toLocaleString()}</span>
+                {(activeTab === 'locations' ? locationData : ageData).length === 0 ? (
+                  <div className="text-center py-4 text-xs text-gray-500">Chưa có dữ liệu</div>
+                ) : (
+                  (activeTab === 'locations' ? locationData : ageData).map((item, index) => (
+                    <div key={index} className="group hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-2 transition-colors">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                          {'country' in item ? item.country : item.range}
+                        </span>
+                        <span className="text-xs sm:text-sm font-medium">{item.count.toLocaleString()}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div 
+                          className={`${index === 0 ? 'bg-blue-500' : index === 1 ? 'bg-blue-400' : 'bg-blue-300'} h-2 rounded-full transition-all duration-1000 ease-out`}
+                          style={{ width: `${item.percentage}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                      <div 
-                        className={`${index === 0 ? 'bg-blue-500' : index === 1 ? 'bg-blue-400' : 'bg-blue-300'} h-2 rounded-full transition-all duration-1000 ease-out`}
-                        style={{ width: `${item.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
 
@@ -393,7 +437,7 @@ export function OverviewSection() {
                   <circle cx="75" cy="12" r="3" fill="#3B82F6" className="animate-ping" />
                 </svg>
                 <div className="absolute top-1 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded backdrop-blur-sm">
-                  128.3K lượt xem
+                  {animatedStats.reach.toLocaleString()} lượt xem
                 </div>
               </div>
             </div>
@@ -423,24 +467,24 @@ export function OverviewSection() {
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">@MyYouTubeChannel</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">2 người đăng ký • Đã đăng nhập</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{animatedStats.followers.toLocaleString()} người đăng ký • Đã đăng nhập</p>
                   </div>
                 </div>
                 <Badge className="bg-green-600 text-white hover:bg-green-700 text-xs">Chính</Badge>
               </div>
 
               {/* Zalo */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
+              <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg opacity-60 hover:opacity-100 transition-opacity cursor-pointer">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-[#0068FF] rounded-full flex items-center justify-center text-white">
                     <MessageCircle className="h-4 w-4 sm:h-5 sm:w-5" />
                   </div>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">Zalo Official Account</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Đang thực hiện tích hợp...</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Chưa liên kết</p>
                   </div>
                 </div>
-                <Badge variant="outline" className="text-blue-600 border-blue-200 text-xs">Đang làm</Badge>
+                <Button size="sm" variant="outline" className="text-xs">Kết nối</Button>
               </div>
 
               {/* TikTok */}
@@ -489,15 +533,15 @@ export function OverviewSection() {
             
             <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-6">
               <div className="text-center p-2 sm:p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">687</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">0</p>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Tin (Stories)</p>
               </div>
               <div className="text-center p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">189</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">0</p>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Bài viết</p>
               </div>
               <div className="text-center p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">24</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">0</p>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Thước phim (Reels)</p>
               </div>
             </div>
@@ -526,25 +570,20 @@ export function OverviewSection() {
           {/* 4. Anomaly Detection Card */}
           <Card className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl p-4 sm:p-6 hover:shadow-xl transition-all duration-300">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center animate-pulse">
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
                 <AlertTriangle className="h-3 w-3 sm:h-4 sm:w-4 text-orange-500" />
               </div>
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Phát hiện bất thường</h3>
             </div>
             
             <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
-              Số lượng người theo dõi đang tăng vượt dự đoán. Có thể do ai đó đã chia sẻ bài viết của bạn.
+              Chưa phát hiện bất thường nào trên các kênh mạng xã hội của bạn.
             </p>
             
             <div className="relative mb-4 sm:mb-6">
               <div className="flex items-end gap-1 sm:gap-2 h-24 sm:h-32">
-                {[20, 25, 30, 45, 80, 35, 40].map((height, i) => (
+                {[0, 0, 0, 0, 0, 0, 0].map((height, i) => (
                   <div key={i} className="flex-1 bg-teal-200 dark:bg-teal-700 rounded-t hover:bg-teal-300 dark:hover:bg-teal-600 transition-colors cursor-pointer" style={{ height: `${height}%` }}>
-                    {height === 80 && (
-                      <div className="absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-2 py-1 rounded animate-bounce">
-                        +10K Người theo dõi
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
@@ -552,11 +591,11 @@ export function OverviewSection() {
             
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
               <div>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{animatedStats.engagement.toFixed(1)}%</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">0%</p>
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Dự đoán</p>
               </div>
               <div className="text-right sm:text-left">
-                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">45%</p>
+                <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400">0%</p>
                 <p className="text-xs text-gray-500 dark:text-gray-500">Phụ</p>
               </div>
             </div>
@@ -574,7 +613,7 @@ export function OverviewSection() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">Lịch đăng bài</h3>
-                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">26 bài viết đã lên lịch</p>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">0 bài viết đã lên lịch</p>
               </div>
               <Button size="sm" variant="outline" className="text-blue-600 border-blue-200 text-xs sm:text-sm w-full sm:w-auto">
                 <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
@@ -583,51 +622,8 @@ export function OverviewSection() {
             </div>
             
             <div className="space-y-3 sm:space-y-4 max-h-64 sm:max-h-80 overflow-y-auto">
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center min-w-[2.5rem]">
-                  <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">10:00</span>
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full mt-1"></div>
-                </div>
-                <div className="flex-1 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-l-4 border-yellow-400 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">🕘 Các cuộc thi có thể kích thích tương tác lớn hơn</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center min-w-[2.5rem]">
-                  <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">12:00</span>
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mt-1"></div>
-                </div>
-                <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
-                  <div className="flex gap-2">
-                    <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs">🍕</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs sm:text-sm font-medium truncate">Cuối tuần nhiều thời gian hơn cho những lựa chọn lành mạnh...</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center min-w-[2.5rem]">
-                  <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">14:00</span>
-                  <div className="w-2 h-2 bg-pink-400 rounded-full mt-1"></div>
-                </div>
-                <div className="flex-1 p-3 bg-pink-50 dark:bg-pink-900/20 rounded-lg border-l-4 border-pink-400 hover:bg-pink-100 dark:hover:bg-pink-900/30 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">💝 Tri ân mọi người và bạn có thể tập trung vào...</p>
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <div className="flex flex-col items-center min-w-[2.5rem]">
-                  <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">16:00</span>
-                  <div className="w-2 h-2 bg-gray-400 rounded-full mt-1"></div>
-                </div>
-                <div className="flex-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-pointer">
-                  <p className="text-xs sm:text-sm">Câu chuyện thương hiệu hàng tuần và tiêu điểm ngành</p>
-                </div>
+              <div className="text-center py-12 text-sm text-gray-500">
+                Chưa có lịch đăng bài nào
               </div>
             </div>
           </Card>
@@ -641,7 +637,7 @@ export function OverviewSection() {
               </div>
             </div>
             
-            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">Đã đăng vào ngày 15 tháng 5, 2024 lúc 13:00</p>
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">Chưa có bài viết nào được chọn</p>
             
             <div className="space-y-4 mb-4 sm:mb-6">
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
@@ -653,13 +649,13 @@ export function OverviewSection() {
               
               <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Người theo dõi</p>
-                <p className="text-base sm:text-lg font-bold text-blue-600">+2.953</p>
+                <p className="text-base sm:text-lg font-bold text-blue-600">0</p>
               </div>
             </div>
             
             <div className="mb-4 sm:mb-6">
               <div className="flex items-end gap-1 h-12 sm:h-16">
-                {[30, 45, 60, 80, 65, 40, 55].map((height, i) => (
+                {[0, 0, 0, 0, 0, 0, 0].map((height, i) => (
                   <div 
                     key={i} 
                     className="flex-1 bg-blue-400 dark:bg-blue-600 rounded-t hover:bg-blue-500 dark:hover:bg-blue-500 transition-colors cursor-pointer" 
@@ -673,9 +669,9 @@ export function OverviewSection() {
             <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 sm:p-4">
               <h4 className="font-medium text-gray-900 dark:text-white mb-2 text-sm sm:text-base">Phát hiện độc đáo</h4>
               <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Chúng tôi đã cung cấp phân tích mới về lượt tiếp cận và người theo dõi. Xem tại sao bài viết này hiệu quả về mặt thống kê.
+                Chưa có phát hiện độc đáo nào.
               </p>
-              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto text-xs sm:text-sm">
+              <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white w-full sm:w-auto text-xs sm:text-sm" disabled>
                 Đăng ký nhận phân tích khác
               </Button>
             </div>

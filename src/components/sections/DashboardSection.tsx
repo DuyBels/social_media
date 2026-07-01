@@ -7,58 +7,130 @@ import { TrendingUp, Users, Eye, MessageCircle, Heart, DollarSign, Target } from
 
 Chart.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Tooltip, Legend);
 
-const platformPostsData = {
-  labels: ["YouTube", "Zalo", "TikTok", "Facebook"],
-  datasets: [
-    {
-      label: "Bài viết tuần này",
-      data: [25, 8, 12, 15],
-      backgroundColor: ["#FF0000", "#0068FF", "#000000", "#1877f2"],
-    },
-  ],
-};
+import { useState, useEffect } from "react";
+import { apiFetch } from "@/lib/apiClient";
 
-const engagementData = {
-  labels: ["Lượt thích", "Bình luận", "Chia sẻ", "Lượt lưu"],
-  datasets: [
-    {
-      label: "Tổng lượt tương tác",
-      data: [15420, 3280, 1950, 870],
-      backgroundColor: ["#ef4444", "#f59e42", "#10b981", "#6366f1"],
-    },
-  ],
-};
-
-const weeklyTrendsData = {
-  labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
-  datasets: [
-    {
-      label: "Tăng trưởng người theo dõi",
-      data: [1250, 1890, 2340, 2890],
-      borderColor: "#10b981",
-      backgroundColor: "rgba(16,185,129,0.1)",
-      tension: 0.4,
-      fill: true,
-    },
-    {
-      label: "Lượt hiển thị (nghìn)",
-      data: [245, 289, 334, 398],
-      borderColor: "#6366f1",
-      backgroundColor: "rgba(99,102,241,0.1)",
-      tension: 0.4,
-      fill: true,
-    },
-  ],
-};
-
-const platformMetrics = [
-  { platform: "YouTube", status: "Đã đăng nhập", followers: "2 subscribers", engagement: "50.0%", reach: "24 views", color: "#FF0000" },
-  { platform: "Zalo", status: "Đang tích hợp", followers: "3.2K quan tâm", engagement: "3.5%", reach: "12K", color: "#0068FF" },
-  { platform: "TikTok", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#000000" },
-  { platform: "Facebook", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#1877f2" },
-];
+interface EngagementItem {
+  id: number;
+  type: string;
+  user: string;
+  platform: string;
+  post: string;
+  time: string;
+}
 
 export function DashboardSection() {
+  const [stats, setStats] = useState({
+    followers: 2,
+    reach: 24,
+    engagement: 50.0,
+    postsThisWeek: 1,
+    commentsCount: 3,
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      const res = await apiFetch<EngagementItem[]>("engagements");
+      if (res.success && res.data) {
+        const engagements = res.data;
+        
+        // Find latest YouTube subscriber milestone
+        const youtubeSubsItem = engagements.find(
+          (e) => e.platform === "YouTube" && e.type === "Subscribe"
+        );
+        let followers = 2; // default
+        let reach = 6; // default
+        if (youtubeSubsItem) {
+          const match = youtubeSubsItem.post.match(/Kênh đạt mốc ([\d.,]+) người đăng ký/);
+          if (match) {
+            followers = parseInt(match[1].replace(/[,.]/g, ""), 10);
+          }
+          const matchViews = youtubeSubsItem.post.match(/và ([\d.,]+) lượt xem/);
+          if (matchViews) {
+            reach = parseInt(matchViews[1].replace(/[,.]/g, ""), 10);
+          }
+        }
+
+        // Count YouTube comments
+        const ytComments = engagements.filter(
+          (e) => e.platform === "YouTube" && e.type === "Comment"
+        );
+        const commentsCount = ytComments.length;
+
+        // Calculate engagement rate
+        const engagement = reach > 0 ? parseFloat(((commentsCount / reach) * 100).toFixed(1)) : 0;
+        
+        // Count YouTube videos
+        const ytVideos = engagements.filter(
+          (e) => e.platform === "YouTube" && e.type === "Video"
+        );
+        const postsThisWeek = 1 + ytVideos.length;
+
+        setStats({
+          followers,
+          reach,
+          engagement: engagement > 0 ? engagement : 50.0,
+          postsThisWeek,
+          commentsCount,
+        });
+      }
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  const platformPostsData = {
+    labels: ["YouTube", "Zalo", "TikTok", "Facebook"],
+    datasets: [
+      {
+        label: "Bài viết tuần này",
+        data: [stats.postsThisWeek, 0, 0, 0],
+        backgroundColor: ["#FF0000", "#0068FF", "#000000", "#1877f2"],
+      },
+    ],
+  };
+
+  const engagementData = {
+    labels: ["Lượt thích", "Bình luận", "Chia sẻ", "Lượt lưu"],
+    datasets: [
+      {
+        label: "Tổng lượt tương tác",
+        data: [0, stats.commentsCount, 0, 0],
+        backgroundColor: ["#ef4444", "#f59e42", "#10b981", "#6366f1"],
+      },
+    ],
+  };
+
+  const weeklyTrendsData = {
+    labels: ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4"],
+    datasets: [
+      {
+        label: "Tăng trưởng người theo dõi",
+        data: [0, 0, 0, stats.followers],
+        borderColor: "#10b981",
+        backgroundColor: "rgba(16,185,129,0.1)",
+        tension: 0.4,
+        fill: true,
+      },
+      {
+        label: "Lượt hiển thị (lượt)",
+        data: [0, 0, 0, stats.reach],
+        borderColor: "#6366f1",
+        backgroundColor: "rgba(99,102,241,0.1)",
+        tension: 0.4,
+        fill: true,
+      },
+    ],
+  };
+
+  const platformMetrics = [
+    { platform: "YouTube", status: "Đã đăng nhập", followers: `${stats.followers} subscribers`, engagement: `${stats.engagement.toFixed(1)}%`, reach: `${stats.reach} views`, color: "#FF0000" },
+    { platform: "Zalo", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#0068FF" },
+    { platform: "TikTok", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#000000" },
+    { platform: "Facebook", status: "Chưa kết nối", followers: "0", engagement: "0%", reach: "0", color: "#1877f2" },
+  ];
+
   return (
     <div className="space-y-4">
       {/* Key Metrics */}
@@ -69,8 +141,8 @@ export function DashboardSection() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">305.2K</div>
-            <p className="text-xs text-muted-foreground">+12.3% so với tháng trước</p>
+            <div className="text-2xl font-bold">{loading ? "..." : stats.followers.toLocaleString()}</div>
+            <p className="text-xs text-green-600">+{stats.followers} người đăng ký</p>
           </CardContent>
         </Card>
         <Card>
@@ -79,8 +151,8 @@ export function DashboardSection() {
             <Eye className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">544K</div>
-            <p className="text-xs text-muted-foreground">+8.7% so với tháng trước</p>
+            <div className="text-2xl font-bold">{loading ? "..." : stats.reach.toLocaleString()}</div>
+            <p className="text-xs text-green-600">+{stats.reach} lượt xem</p>
           </CardContent>
         </Card>
         <Card>
@@ -89,8 +161,8 @@ export function DashboardSection() {
             <Heart className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">4.8%</div>
-            <p className="text-xs text-muted-foreground">+0.3% so với tháng trước</p>
+            <div className="text-2xl font-bold">{loading ? "..." : stats.engagement.toFixed(1)}%</div>
+            <p className="text-xs text-green-600">Hiệu suất cao</p>
           </CardContent>
         </Card>
         <Card>
@@ -99,8 +171,8 @@ export function DashboardSection() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2x</div>
-            <p className="text-xs text-muted-foreground">+0.4x so với tháng trước</p>
+            <div className="text-2xl font-bold">0x</div>
+            <p className="text-xs text-muted-foreground">Chưa có dữ liệu</p>
           </CardContent>
         </Card>
       </div>
@@ -190,7 +262,7 @@ export function DashboardSection() {
                     platform.status === "Đã đăng nhập" 
                       ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300"
                       : platform.status === "Đang tích hợp"
-                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300"
+                      ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-green-300"
                       : "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400"
                   }`}>
                     {platform.status}
@@ -223,30 +295,8 @@ export function DashboardSection() {
             <CardTitle>Bài viết hiệu quả nhất</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {[
-                { platform: "TikTok", content: "Video hậu trường thiết kế 💡", engagement: "5.7K", color: "#000000" },
-                { platform: "YouTube", content: "Video hướng dẫn sử dụng sản phẩm mới 🎥", engagement: "4.2K", color: "#FF0000" },
-                { platform: "Facebook", content: "Chương trình khuyến mãi hè 2026 🌞", engagement: "1.8K", color: "#1877f2" },
-                { platform: "Zalo", content: "Thông báo chương trình tri ân khách hàng 💝", engagement: "892", color: "#0068FF" },
-              ].map((post, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                  <div className="flex items-center gap-3">
-                    <div 
-                      className="w-2 h-2 rounded-full" 
-                      style={{ backgroundColor: post.color }}
-                    />
-                    <div>
-                      <p className="font-medium text-sm">{post.content}</p>
-                      <p className="text-xs text-muted-foreground">{post.platform}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1 text-sm text-red-500">
-                    <Heart className="h-3 w-3 fill-current" />
-                    {post.engagement}
-                  </div>
-                </div>
-              ))}
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              Chưa có bài viết nào
             </div>
           </CardContent>
         </Card>
